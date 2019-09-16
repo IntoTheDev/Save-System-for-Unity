@@ -22,9 +22,9 @@ public static class GameData
 		return JsonUtility.FromJson<T>(dataAsJson);
 	}
 
-	public static T[] Load<T>(T[] dataSetToLoad) where T : ISavableData
+	public static T[] Load<T>(T[] dataToLoad) where T : ISavableData
 	{
-		string dataAsJson = LoadData(dataSetToLoad.GetType().Name);
+		string dataAsJson = LoadData(dataToLoad.GetType().Name);
 		return JsonHelper.FromJson<T>(dataAsJson);
 	}
 
@@ -62,6 +62,7 @@ public static class GameData
 
 		StringBuilder inSb = new StringBuilder(data);
 		StringBuilder outSb = new StringBuilder(length);
+
 		char c;
 		int key = 129;
 
