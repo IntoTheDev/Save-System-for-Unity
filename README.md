@@ -5,6 +5,7 @@ Save System for Unity with Json and basic encryption also supports arrays
 We need to create a struct of data that we will save and inherit interface "ISavableData"
 
 ```csharp
+[System.Serializable]
 public struct PlayerData : ISavableData
 {
 	public string Name;
