@@ -17,6 +17,8 @@ To save data we need to do:
 
 ```csharp
 // Somewhere in code...
+using ToolBox.Serialization;
+
 PlayerData playerData = new PlayerData
 {
 	Name = "My name",
