@@ -2,7 +2,7 @@
 using System.Text;
 using UnityEngine;
 
-namespace ToolBox.Saving
+namespace ToolBox.Serialization
 {
 	public static class GameData
 	{
