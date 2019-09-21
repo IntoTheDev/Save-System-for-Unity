@@ -1,4 +1,3 @@
-﻿using ToolBox.Attributes;
 using ToolBox.Serialization;
 using UnityEngine;
 
@@ -18,19 +17,6 @@ public class SerializationExample : MonoBehaviour
 		// Loading data...
 		PlayerData newPlayerData = new PlayerData();
 		newPlayerData = GameData.Load(newPlayerData);
-	}
-
-	[Button("Save")]
-	private void SaveData()
-	{
-		// Saving data...
-		PlayerData playerData = new PlayerData
-		{
-			name = "My name",
-			age = 20
-		};
-
-		GameData.Save(playerData);
 	}
 }
 
