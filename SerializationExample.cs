@@ -20,6 +20,7 @@ public class SerializationExample : MonoBehaviour
 	}
 }
 
+[System.Serializable]
 public struct PlayerData : ISerializedData
 {
 	public string name;
