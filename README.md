@@ -36,6 +36,8 @@ To load data we need to do:
 
 ```csharp
 // Somewhere in code...
+using ToolBox.Serialization;
+
 PlayerData newPlayerData = new PlayerData();
 newPlayerData = GameData.Load(newPlayerData);
 
