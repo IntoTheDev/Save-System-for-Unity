@@ -6,25 +6,25 @@ namespace ToolBox.Serialization
 {
 	public static class GameData
 	{
-		public static void Save<T>(T dataToSave) where T : ISavableData
+		public static void Save<T>(T dataToSave) where T : ISerializedData
 		{
 			string dataAsJson = JsonUtility.ToJson(dataToSave, true);
 			SaveData(dataToSave.GetType().Name, dataAsJson);
 		}
 
-		public static void Save<T>(T[] dataToSave) where T : ISavableData
+		public static void Save<T>(T[] dataToSave) where T : ISerializedData
 		{
 			string dataAsJson = JsonHelper.ToJson(dataToSave, true);
 			SaveData(dataToSave.GetType().Name, dataAsJson);
 		}
 
-		public static T Load<T>(T dataToLoad) where T : ISavableData
+		public static T Load<T>(T dataToLoad) where T : ISerializedData
 		{
 			string dataAsJson = LoadData(dataToLoad.GetType().Name);
 			return JsonUtility.FromJson<T>(dataAsJson);
 		}
 
-		public static T[] Load<T>(T[] dataToLoad) where T : ISavableData
+		public static T[] Load<T>(T[] dataToLoad) where T : ISerializedData
 		{
 			string dataAsJson = LoadData(dataToLoad.GetType().Name);
 			return JsonHelper.FromJson<T>(dataAsJson);
