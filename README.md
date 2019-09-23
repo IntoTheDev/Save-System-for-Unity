@@ -6,7 +6,7 @@ We need to create a struct of data that we will save and inherit interface "ISav
 
 ```csharp
 [System.Serializable]
-public struct PlayerData : ISavableData
+public struct PlayerData : ISerializableData
 {
 	public string Name;
 	public int Age;
