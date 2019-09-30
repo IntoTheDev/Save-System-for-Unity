@@ -21,12 +21,20 @@ namespace ToolBox.Serialization
 		public static T Load<T>(T dataToLoad) where T : ISerializableData
 		{
 			string dataAsJson = LoadData(dataToLoad.GetType().Name);
+
+			if (dataAsJson == null)
+				return default;
+
 			return JsonUtility.FromJson<T>(dataAsJson);
 		}
 
 		public static T[] Load<T>(T[] dataToLoad) where T : ISerializableData
 		{
 			string dataAsJson = LoadData(dataToLoad.GetType().Name);
+
+			if (dataAsJson == null)
+				return default;
+
 			return JsonHelper.FromJson<T>(dataAsJson);
 		}
 
@@ -44,6 +52,10 @@ namespace ToolBox.Serialization
 		private static string LoadData(string fileName)
 		{
 			string filePath = GetFilePath(fileName);
+
+			if (!File.Exists(filePath))
+				return null;
+
 			string dataAsJson = File.ReadAllText(filePath);
 
 			// Decrypt file if we are not in editor
