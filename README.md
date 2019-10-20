@@ -23,7 +23,9 @@ public class Test : MonoBehaviour
 		Serializer.Save(user, serializationKey);
 
 		// Loading data
-		User newUser = Serializer.Load(user, serializationKey);
+		User newUser = default;
+
+		newUser = Serializer.Load(newUser, serializationKey);
 	}
 }
 
@@ -33,5 +35,4 @@ public struct User : ISerializableData
 	public string Name;
 	public int Age;
 }
-
 ```
