@@ -25,7 +25,9 @@ PlayerData playerData = new PlayerData
 	Age = 20
 };
 
-GameData.Save(playerData);
+string serializationKey = "Player";
+
+Serializer.Save(playerData, serializationKey);
 ```
 
 We will get a new file in Application.persistentDataPath (If file is saved in a standalone build, file will be encrypted)
@@ -38,8 +40,9 @@ To load data we need to do:
 // Somewhere in code...
 using ToolBox.Serialization;
 
-PlayerData newPlayerData = new PlayerData();
-newPlayerData = GameData.Load(newPlayerData);
+string serializationKey = "Player";
+
+PlayerData newPlayerData = Serializer.Load(newPlayerData, serializationKey);
 
 Debug.Log(newPlayerData.Name);
 ```
