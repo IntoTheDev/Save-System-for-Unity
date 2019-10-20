@@ -11,7 +11,7 @@ public class Test : MonoBehaviour
 	private void Start()
 	{
 		// File name
-		string serializationKey = "UserDataSecond";
+		string serializationKey = "UserData";
 
 		// Saving data
 		User user = new User
