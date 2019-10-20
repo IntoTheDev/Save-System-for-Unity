@@ -3,8 +3,8 @@ Save System for Unity with Json and basic encryption also supports arrays
 
 ## Usage
 ```csharp
-using UnityEngine;
 using ToolBox.Serialization;
+using UnityEngine;
 
 public class Test : MonoBehaviour
 {
