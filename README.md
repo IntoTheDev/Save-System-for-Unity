@@ -24,7 +24,6 @@ public class Test : MonoBehaviour
 
 		// Loading data
 		User newUser = Serializer.Load(user, serializationKey);
-		Debug.Log(newUser.Name + " is " + newUser.Age);
 	}
 }
 
