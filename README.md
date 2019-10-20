@@ -16,7 +16,7 @@ public class Test : MonoBehaviour
 		// Saving data
 		User user = new User
 		{
-			Name = "NAME",
+			Name = "Name",
 			Age = 20
 		};
 
