@@ -18,6 +18,9 @@ namespace ToolBox.Serialization
 		{
 			string filePath = Path.Combine(Application.persistentDataPath, fileName + ".data");
 
+			if (!File.Exists(filePath))
+				return default;
+			
 			byte[] loadBytes = File.ReadAllBytes(filePath);
 			return SerializationUtility.DeserializeValue<T>(loadBytes, DataFormat.Binary);
 		}
