@@ -67,9 +67,6 @@ namespace ToolBox.Serialization
 
 		public static void LoadFile()
 		{
-			if (isInitialized)
-				return;
-
 			string filePath = GetFilePath(currentProfileIndex);
 
 			if (!File.Exists(filePath))
@@ -80,8 +77,6 @@ namespace ToolBox.Serialization
 
 			if (data == null)
 				data = new Dictionary<int, ISerializable>(10);
-
-			Initialize();
 		}
 
 		public static void ChangeProfile(int profileIndex, bool saveCurrentFile)
