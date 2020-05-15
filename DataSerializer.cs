@@ -9,29 +9,29 @@ namespace ToolBox.Serialization
 {
 	public static class DataSerializer
 	{
-		private static Dictionary<int, ISerializable> data = null;
+		private static Dictionary<string, ISerializable> data = null;
 		private static int currentProfileIndex = 0;
 		[NonSerialized, ShowInInspector] private static bool isInitialized = false;
 
 		private const string FILE_NAME = "Save";
 
-		public static void Save<T>(int instanceID, T dataToSave) where T : ISerializable
+		public static void Save<T>(string saveKey, T dataToSave) where T : ISerializable
 		{
 			if (!isInitialized)
 				Initialize();
 			
-			if (data.ContainsKey(instanceID))
-				data[instanceID] = dataToSave;
+			if (data.ContainsKey(saveKey))
+				data[saveKey] = dataToSave;
 			else
-				data.Add(instanceID, dataToSave);
+				data.Add(saveKey, dataToSave);
 		}
 
-		public static T Load<T>(int instanceID) where T : ISerializable
+		public static T Load<T>(string loadKey) where T : ISerializable
 		{
 			if (!isInitialized)
 				Initialize();
 
-			if (data.TryGetValue(instanceID, out ISerializable value))
+			if (data.TryGetValue(loadKey, out ISerializable value))
 				return (T)value;
 
 			return default;
@@ -58,7 +58,7 @@ namespace ToolBox.Serialization
 			if (!isInitialized || !File.Exists(filePath))
 				return;
 
-			byte[] bytes = SerializationUtility.SerializeValue(data, DataFormat.Binary);
+			byte[] bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON);
 			File.WriteAllBytes(filePath, bytes);
 
 			if (!isInitialized)
@@ -76,10 +76,10 @@ namespace ToolBox.Serialization
 				CreateFile(currentProfileIndex, true);
 
 			byte[] loadBytes = File.ReadAllBytes(filePath);
-			data = SerializationUtility.DeserializeValue<Dictionary<int, ISerializable>>(loadBytes, DataFormat.Binary);
+			data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.JSON);
 
 			if (data == null)
-				data = new Dictionary<int, ISerializable>(10);
+				data = new Dictionary<string, ISerializable>(10);
 
 			if (!isInitialized)
 				Initialize();
