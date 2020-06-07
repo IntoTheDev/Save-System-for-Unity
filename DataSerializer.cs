@@ -1,6 +1,4 @@
-﻿using Sirenix.OdinInspector;
-using Sirenix.Serialization;
-using System;
+﻿using Sirenix.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -11,15 +9,11 @@ namespace ToolBox.Serialization
 	{
 		private static Dictionary<string, ISerializable> data = null;
 		private static int currentProfileIndex = 0;
-		[NonSerialized, ShowInInspector] private static bool isInitialized = false;
 
 		private const string FILE_NAME = "Save";
 
 		public static void Save<T>(string saveKey, T dataToSave) where T : ISerializable
 		{
-			if (!isInitialized)
-				Initialize();
-			
 			if (data.ContainsKey(saveKey))
 				data[saveKey] = dataToSave;
 			else
@@ -28,16 +22,24 @@ namespace ToolBox.Serialization
 
 		public static T Load<T>(string loadKey) where T : ISerializable
 		{
-			if (!isInitialized)
-				Initialize();
-
 			if (data.TryGetValue(loadKey, out ISerializable value))
 				return (T)value;
 
 			return default;
 		}
 
-		public static void CreateFile(int profileIndex, bool overwrite)
+		public static void ChangeProfile(int profileIndex)
+		{
+			if (currentProfileIndex == profileIndex)
+				return;
+
+			SaveFile();
+
+			currentProfileIndex = profileIndex;
+			LoadFile();
+		}
+
+		private static void CreateFile(int profileIndex, bool overwrite)
 		{
 			string filePath = GetFilePath(profileIndex);
 			bool isFileExists = File.Exists(filePath);
@@ -51,68 +53,38 @@ namespace ToolBox.Serialization
 			fileStream?.Close();
 		}
 
-		public static void SaveFile()
+		private static void SaveFile()
 		{
 			string filePath = GetFilePath(currentProfileIndex);
 
-			if (!isInitialized || !File.Exists(filePath))
-				return;
-
-			byte[] bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON);
+			byte[] bytes = SerializationUtility.SerializeValue(data, DataFormat.Binary);
 			File.WriteAllBytes(filePath, bytes);
-
-			if (!isInitialized)
-				Initialize();
 		}
 
-		public static void LoadFile()
+		private static void LoadFile()
 		{
-			if (isInitialized)
-				return;
-
 			string filePath = GetFilePath(currentProfileIndex);
 
 			if (!File.Exists(filePath))
 				CreateFile(currentProfileIndex, true);
 
 			byte[] loadBytes = File.ReadAllBytes(filePath);
-			data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.JSON);
+			data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.Binary);
 
 			if (data == null)
 				data = new Dictionary<string, ISerializable>(10);
-
-			if (!isInitialized)
-				Initialize();
-		}
-
-		public static void ChangeProfile(int profileIndex, bool saveCurrentFile)
-		{
-			if (currentProfileIndex == profileIndex)
-				return;
-
-			if (saveCurrentFile)
-				SaveFile();
-
-			currentProfileIndex = profileIndex;
-			isInitialized = false;
-
-			LoadFile();
-		}
-
-		public static void UnloadFile()
-		{
-			data = null;
-			isInitialized = false;
 		}
 
 		private static string GetFilePath(int profileIndex) =>
 			Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{profileIndex}.data");
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
 		private static void Initialize()
 		{
-			isInitialized = true;
-			new GameObject("[DATA SAVER]", typeof(DataSaver));
+			currentProfileIndex = 0;
+
 			LoadFile();
+			Application.quitting += SaveFile;
 		}
 	}
 }
