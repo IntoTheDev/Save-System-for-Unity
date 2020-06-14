@@ -7,22 +7,22 @@ namespace ToolBox.Serialization
 {
 	public static class DataSerializer
 	{
-		private static Dictionary<string, ISerializable> data = null;
-		private static int currentProfileIndex = 0;
+		private static Dictionary<string, ISerializable> _data = null;
+		private static int _currentProfileIndex = 0;
 
 		private const string FILE_NAME = "Save";
 
 		public static void Save<T>(string saveKey, T dataToSave) where T : ISerializable
 		{
-			if (data.ContainsKey(saveKey))
-				data[saveKey] = dataToSave;
+			if (_data.ContainsKey(saveKey))
+				_data[saveKey] = dataToSave;
 			else
-				data.Add(saveKey, dataToSave);
+				_data.Add(saveKey, dataToSave);
 		}
 
 		public static T Load<T>(string loadKey) where T : ISerializable
 		{
-			if (data.TryGetValue(loadKey, out ISerializable value))
+			if (_data.TryGetValue(loadKey, out ISerializable value))
 				return (T)value;
 
 			return default;
@@ -30,12 +30,12 @@ namespace ToolBox.Serialization
 
 		public static void ChangeProfile(int profileIndex)
 		{
-			if (currentProfileIndex == profileIndex)
+			if (_currentProfileIndex == profileIndex)
 				return;
 
 			SaveFile();
 
-			currentProfileIndex = profileIndex;
+			_currentProfileIndex = profileIndex;
 			LoadFile();
 		}
 
@@ -55,24 +55,24 @@ namespace ToolBox.Serialization
 
 		private static void SaveFile()
 		{
-			string filePath = GetFilePath(currentProfileIndex);
+			string filePath = GetFilePath(_currentProfileIndex);
 
-			byte[] bytes = SerializationUtility.SerializeValue(data, DataFormat.Binary);
+			byte[] bytes = SerializationUtility.SerializeValue(_data, DataFormat.Binary);
 			File.WriteAllBytes(filePath, bytes);
 		}
 
 		private static void LoadFile()
 		{
-			string filePath = GetFilePath(currentProfileIndex);
+			string filePath = GetFilePath(_currentProfileIndex);
 
 			if (!File.Exists(filePath))
-				CreateFile(currentProfileIndex, true);
+				CreateFile(_currentProfileIndex, true);
 
 			byte[] loadBytes = File.ReadAllBytes(filePath);
-			data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.Binary);
+			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.Binary);
 
-			if (data == null)
-				data = new Dictionary<string, ISerializable>(10);
+			if (_data == null)
+				_data = new Dictionary<string, ISerializable>(10);
 		}
 
 		private static string GetFilePath(int profileIndex) =>
@@ -81,7 +81,7 @@ namespace ToolBox.Serialization
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
 		private static void Initialize()
 		{
-			currentProfileIndex = 0;
+			_currentProfileIndex = 0;
 
 			LoadFile();
 			Application.quitting += SaveFile;
