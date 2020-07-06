@@ -1,8 +1,16 @@
-﻿public interface ISerializable 
+﻿namespace ToolBox.Serialization
 {
-	void Setup(string guid);
+	public interface ISerializable
+	{
 
-	void Save();
+	}
 
-	void Load();
+	public interface ISerializableState : ISerializable
+	{
+		void Setup(string guid);
+
+		void Save();
+
+		void Load();
+	}
 }

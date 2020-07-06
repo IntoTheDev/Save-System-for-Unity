@@ -1,16 +1,14 @@
 ﻿namespace ToolBox.Serialization
 {
-	public abstract class Serializer<T> : ISerializable where T : ISerializable
+	public abstract class Serializer<T> : ISerializableState where T : ISerializableState
 	{
 		private string _saveKey = "";
 
 		public void Setup(string guid) =>
 			_saveKey = $"{guid}{GetType()}";
 
-		public void Save()
-		{
+		public void Save() =>
 			DataSerializer.Save(_saveKey, this);
-		}
 
 		public void Load()
 		{

@@ -2,7 +2,7 @@
 
 namespace ToolBox.Serialization
 {
-	public abstract class SerializedMono : MonoBehaviour, ISerializable
+	public abstract class SerializedMono : MonoBehaviour, ISerializableState
 	{
 		protected string _saveKey = "";
 
@@ -15,7 +15,7 @@ namespace ToolBox.Serialization
 		public abstract void Load();
 	}
 
-	public abstract class SerializedMono<T> : SerializedMono where T : ISerializable
+	public abstract class SerializedMono<T> : SerializedMono where T : ISerializableState
 	{
 		public override void Load()
 		{
