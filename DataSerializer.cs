@@ -39,6 +39,14 @@ namespace ToolBox.Serialization
 			LoadFile();
 		}
 
+		public static void SaveFile()
+		{
+			string filePath = GetFilePath(_currentProfileIndex);
+
+			byte[] bytes = SerializationUtility.SerializeValue(_data, DataFormat.Binary);
+			File.WriteAllBytes(filePath, bytes);
+		}
+
 		private static void CreateFile(int profileIndex, bool overwrite)
 		{
 			string filePath = GetFilePath(profileIndex);
@@ -51,14 +59,6 @@ namespace ToolBox.Serialization
 				fileStream = File.Create(filePath);
 
 			fileStream?.Close();
-		}
-
-		private static void SaveFile()
-		{
-			string filePath = GetFilePath(_currentProfileIndex);
-
-			byte[] bytes = SerializationUtility.SerializeValue(_data, DataFormat.Binary);
-			File.WriteAllBytes(filePath, bytes);
 		}
 
 		private static void LoadFile()
