@@ -10,6 +10,7 @@ namespace ToolBox.Serialization
 	{
 		public static event UnityAction FileSaving = null;
 		public static event UnityAction OnFileLoaded = null;
+		public static bool IsLoaded { get; private set; } = false;
 
 		private static Dictionary<string, ISerializable> _data = null;
 		private static int _currentProfileIndex = 0;
@@ -93,6 +94,8 @@ namespace ToolBox.Serialization
 #if UNITY_EDITOR
 			OnFileLoaded?.Invoke();
 #endif
+
+			IsLoaded = true;
 		}
 	}
 }

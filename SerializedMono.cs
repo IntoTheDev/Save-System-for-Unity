@@ -9,22 +9,30 @@ namespace ToolBox.Serialization
 		public void Setup(string guid) =>
 			_saveKey = $"{guid}{GetType()}";
 
-		public void Save() =>
-			DataSerializer.Save(_saveKey, this);
+		public abstract void Save();
 
 		public abstract void Load();
 	}
 
-	public abstract class SerializedMono<T> : SerializedMono where T : ISerializableState
+	public abstract class SerializedMono<T> : SerializedMono where T : ISerializable
 	{
-		public override void Load()
-		{
-			T data = DataSerializer.Load<T>(_saveKey);
+		protected T _data = default;
 
-			if (data != null)
-				Load(data);
+		public override void Save()
+		{
+			SaveData();
+			DataSerializer.Save(_saveKey, _data);
 		}
 
+		public override void Load()
+		{
+			_data = DataSerializer.Load<T>(_saveKey);
+
+			if (_data != null)
+				Load(_data);
+		}
+
+		protected abstract void SaveData();
 		protected abstract void Load(T data);
 	}
 }

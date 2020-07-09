@@ -5,6 +5,8 @@ namespace ToolBox.Serialization
 {
 	public abstract class SerializedAsset<T> : AssetWithGuid, ISerializable where T : ISerializable
 	{
+		protected T _data = default;
+
 		protected override void OnEnable()
 		{
 			base.OnEnable();
@@ -18,17 +20,21 @@ namespace ToolBox.Serialization
 		}
 
 		[Button]
-		private void Save() =>
-			DataSerializer.Save(_value, this);
+		private void Save()
+		{
+			SaveData();
+			DataSerializer.Save(_value, _data);
+		}
 
 		private void Load()
 		{
-			T data = DataSerializer.Load<T>(_value);
+			_data = DataSerializer.Load<T>(_value);
 
-			if (data != null)
-				Load(data);
+			if (_data != null)
+				Load(_data);
 		}
 
+		protected abstract void SaveData();
 		protected abstract void Load(T data);
 	}
 }
