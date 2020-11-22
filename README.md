@@ -16,7 +16,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-	[SerializeField] private float _health = 100f;
+	private float _health = 100f;
 
 	private const string SAVE_KEY = "PlayerData";
 
