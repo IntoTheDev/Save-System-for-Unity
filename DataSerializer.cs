@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace ToolBox.Serialization
 {
 	public static class DataSerializer
 	{
-		public static event UnityAction FileSaving = null;
-		public static event UnityAction OnFileLoaded = null;
-		public static bool IsLoaded { get; private set; } = false;
-
 		private static Dictionary<string, ISerializable> _data = null;
 		private static int _currentProfileIndex = 0;
 
 		private const string FILE_NAME = "Save";
+		private const DataFormat DATA_FORMAT = DataFormat.Binary;
 
 		public static void Save<T>(string saveKey, T dataToSave) where T : ISerializable
 		{
@@ -25,12 +21,12 @@ namespace ToolBox.Serialization
 				_data.Add(saveKey, dataToSave);
 		}
 
-		public static T Load<T>(string loadKey) where T : ISerializable
+		public static bool TryLoad<T>(string loadKey, out T data) where T : ISerializable
 		{
-			if (_data.TryGetValue(loadKey, out ISerializable value))
-				return (T)value;
+			var hasData = _data.TryGetValue(loadKey, out var value);
+			data = (T)value;
 
-			return default;
+			return hasData;
 		}
 
 		public static void ChangeProfile(int profileIndex)
@@ -48,8 +44,7 @@ namespace ToolBox.Serialization
 		{
 			string filePath = GetFilePath(_currentProfileIndex);
 
-			FileSaving?.Invoke();
-			byte[] bytes = SerializationUtility.SerializeValue(_data, DataFormat.JSON);
+			byte[] bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT);
 			File.WriteAllBytes(filePath, bytes);
 		}
 
@@ -59,9 +54,8 @@ namespace ToolBox.Serialization
 			bool isFileExists = File.Exists(filePath);
 			FileStream fileStream = null;
 
-			if (isFileExists && overwrite)
-				fileStream = File.Create(filePath);
-			else if (!isFileExists)
+			bool shouldCreateFile = (isFileExists && overwrite) || (!isFileExists);
+			if (shouldCreateFile)
 				fileStream = File.Create(filePath);
 
 			fileStream?.Close();
@@ -75,7 +69,7 @@ namespace ToolBox.Serialization
 				CreateFile(_currentProfileIndex, true);
 
 			byte[] loadBytes = File.ReadAllBytes(filePath);
-			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DataFormat.JSON);
+			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
 
 			if (_data == null)
 				_data = new Dictionary<string, ISerializable>(10);
@@ -84,18 +78,13 @@ namespace ToolBox.Serialization
 		private static string GetFilePath(int profileIndex) =>
 			Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{profileIndex}.data");
 
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void Setup()
 		{
 			_currentProfileIndex = 0;
 
 			LoadFile();
 			Application.quitting += SaveFile;
-#if UNITY_EDITOR
-			OnFileLoaded?.Invoke();
-#endif
-
-			IsLoaded = true;
 		}
 	}
 }
