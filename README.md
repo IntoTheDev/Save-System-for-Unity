@@ -8,7 +8,7 @@ Save System for Unity
 - Support multiple profiles
 
 ## Usage
-You need to download this package and [Odin Serializer](https://github.com/TeamSirenix/odin-serializer). That's all.
+You need to download this package and [Odin Serializer](https://github.com/TeamSirenix/odin-serializer). For saving/loading you need to create class/struct and inherit ISerializable interface.
 
 ```csharp
 using ToolBox.Serialization;
