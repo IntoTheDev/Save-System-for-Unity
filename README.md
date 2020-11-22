@@ -4,6 +4,8 @@ Save System for Unity
 ## Features
 - Super fast in terms of performance
 - Can save pretty much everything (Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that)
+- Saving and loading file is automatically
+- Support multiple profiles
 
 ## Usage
 You need to download this package and [Odin Serializer](https://github.com/TeamSirenix/odin-serializer). That's all.
