@@ -1,6 +1,10 @@
 # Save-System-for-Unity
 Save System for Unity
 
+## Features
+- Super fast in terms of performance
+- Can save pretty much everything (Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that)
+
 ## Usage
 You need to download this package and [Odin Serializer](https://github.com/TeamSirenix/odin-serializer). That's all.
 
