@@ -24,7 +24,7 @@ namespace ToolBox.Serialization
 		public static bool TryLoad<T>(string loadKey, out T data) where T : ISerializable
 		{
 			var hasData = _data.TryGetValue(loadKey, out var value);
-			data = (T)value;
+			data = value != null ? (T)value : default;
 
 			return hasData;
 		}
