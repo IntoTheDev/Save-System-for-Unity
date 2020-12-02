@@ -6,7 +6,7 @@ Save System for Unity
 - Can save pretty much everything (Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that)
 - Saving and loading file is automatically
 - Support multiple profiles
-- Saving files are encrypted 
+- Save files are encrypted 
 
 ## Usage
 You need to download this package and [Odin Serializer](https://github.com/TeamSirenix/odin-serializer). For saving/loading you need to create class/struct and inherit ISerializable interface.
