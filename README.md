@@ -9,7 +9,7 @@ Save System for Unity
 - Save files are encrypted 
 
 ## Usage
-You need to download this package and [Odin Serializer](https://odininspector.com/download). For saving/loading you need to create class/struct and inherit ISerializable interface.
+You need to download this package and [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of the page). For saving/loading you need to create class/struct and inherit ISerializable interface.
 
 ```csharp
 using ToolBox.Serialization;
