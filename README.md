@@ -119,8 +119,6 @@ public class Tester : MonoBehaviour
 
 		for (int i = 0; i < 10000; i++)
 		{
-			/*DataSerializer.Save("SAVE", _number);
-			_number = DataSerializer.Load<int>("SAVE");*/
 			PlayerPrefs.SetInt("SAVE", _number);
 			_number = PlayerPrefs.GetInt("SAVE");
 		}
