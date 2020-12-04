@@ -63,6 +63,7 @@ namespace ToolBox.Testing
 
 		private const string SAVE_KEY = "TesterData";
 
+		// Saving
 		private void Awake()
 		{
 			var hasKey = DataSerializer.HasKey(SAVE_KEY);
@@ -75,6 +76,7 @@ namespace ToolBox.Testing
 			_health = data.Health;
 		}
 
+		// Loading
 		private void OnApplicationQuit()
 		{
 			DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
