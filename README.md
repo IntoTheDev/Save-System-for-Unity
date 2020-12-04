@@ -2,7 +2,7 @@
 Save System for Unity
 
 ## Features
-- Super fast in terms of performance. Even simple int saving ~x170 faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
+- Super fast in terms of performance. Even simple int saving around 170 times faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
 - As easy to use as PlayerPrefs
 - Can save pretty much everything (Vector, Quaternion, Array, List, Class, Struct, etc). Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that
 - Support multiple profiles
