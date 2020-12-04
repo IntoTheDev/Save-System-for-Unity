@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
 
 	private const string SAVE_KEY = "PlayerSaveKey";
 
-	// Saving
+	// Loading
 	private void Awake()
 	{
 		var hasKey = DataSerializer.HasKey(SAVE_KEY);
@@ -74,7 +74,7 @@ public class Player : MonoBehaviour
 		_health = data.Health;
 	}
 
-	// Loading
+	// Saving
 	private void OnApplicationQuit()
 	{
 		DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
