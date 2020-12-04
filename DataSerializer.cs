@@ -1,10 +1,15 @@
-﻿using Sirenix.Serialization;
+using Sirenix.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace ToolBox.Serialization
 {
+	public class Item<T> : ISerializable
+	{
+		public T Value = default;
+	}
+
 	public static class DataSerializer
 	{
 		private static Dictionary<string, ISerializable> _data = null;
@@ -12,22 +17,38 @@ namespace ToolBox.Serialization
 
 		private const string FILE_NAME = "Save";
 		private const DataFormat DATA_FORMAT = DataFormat.Binary;
+		private const int INITIAL_SIZE = 64;
 
-		public static void Save<T>(string saveKey, T dataToSave) where T : ISerializable
+		public static void Save<T>(string key, T dataToSave)
 		{
-			if (_data.ContainsKey(saveKey))
-				_data[saveKey] = dataToSave;
+			if (_data.TryGetValue(key, out var data))
+			{
+				var item = (Item<T>)data;
+				item.Value = dataToSave;
+			}
 			else
-				_data.Add(saveKey, dataToSave);
+			{
+				var saveItem = new Item<T> { Value = dataToSave };
+				_data.Add(key, saveItem);
+			}
 		}
 
-		public static bool TryLoad<T>(string loadKey, out T data) where T : ISerializable
+		public static T Load<T>(string key)
 		{
-			var hasData = _data.TryGetValue(loadKey, out var value);
-			data = value != null ? (T)value : default;
+			_data.TryGetValue(key, out var value);
+			var loadItem = (Item<T>)value;
 
-			return hasData;
+			return loadItem.Value;
 		}
+
+		public static bool HasKey(string key) =>
+			_data.ContainsKey(key);
+
+		public static void DeleteKey(string key) =>
+			_data.Remove(key);
+
+		public static void DeleteAll() =>
+			_data.Clear();
 
 		public static void ChangeProfile(int profileIndex)
 		{
@@ -72,7 +93,7 @@ namespace ToolBox.Serialization
 			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
 
 			if (_data == null)
-				_data = new Dictionary<string, ISerializable>(10);
+				_data = new Dictionary<string, ISerializable>(INITIAL_SIZE);
 		}
 
 		private static string GetFilePath(int profileIndex) =>
