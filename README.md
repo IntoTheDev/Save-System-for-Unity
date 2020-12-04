@@ -1,5 +1,4 @@
 # Save-System-for-Unity
-Save System for Unity
 
 ## Features
 - Super fast in terms of performance. Even simple int saving around 170 times faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
