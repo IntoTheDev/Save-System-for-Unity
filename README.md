@@ -59,7 +59,7 @@ public class Player : MonoBehaviour
 {
 	[SerializeField] private float _health = 100;
 
-	private const string SAVE_KEY = "TesterData";
+	private const string SAVE_KEY = "PlayerSaveKey";
 
 	// Saving
 	private void Awake()
