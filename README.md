@@ -2,60 +2,98 @@
 Save System for Unity
 
 ## Features
-- Super fast in terms of performance
-- Can save pretty much everything (Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that)
-- Saving and loading file is automatically
+- Super fast in terms of performance. Even simple int saving ~x200 faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
+- As easy to use as PlayerPrefs
+- Can save pretty much everything. Thanks to [Odin Serializer](https://github.com/TeamSirenix/odin-serializer) for that
 - Support multiple profiles
 - Save files are encrypted 
 
 ## Usage
 You need to download this package and [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of page). 
 
-For saving/loading you need to create class/struct and inherit `ISerializable` interface. 
+### Saving
 
-Fields that you want to save/load in your class/struct must have `SerializeField` attribute. In example below, it will be `_position` and `_health` in `PlayerData` struct.
+```csharp
+float health = 100f;
+DataSerializer.Save("SaveKeyHere", health);
+```
+
+### Loading
+
+```csharp
+float health = DataSerializer.Load<float>("SaveKeyHere");
+```
+
+### Check for key
+
+```csharp
+if (DataSerializer.HasKey("SaveKeyHere"))
+	float health = DataSerializer.Load<float>("SaveKeyHere");
+```
+
+### Delete key
+
+```csharp
+DataSerializer.DeleteKey("SaveKeyHere");
+```
+
+### Delete all save file data
+
+```csharp
+DataSerializer.DeleteAll();
+```
+
+### Change profile. Old profile will be saved and new one is loaded.
+
+```csharp
+DataSerializer.ChangeProfile(profileIndex: 1);
+```
+
+## Saving complex data
 
 ```csharp
 using ToolBox.Serialization;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+namespace ToolBox.Testing
 {
-	private float _health = 100f;
-
-	private const string SAVE_KEY = "PlayerData";
-
-	// Loading
-	private void Awake()
+	public class Tester : MonoBehaviour
 	{
-		var hasData = DataSerializer.TryLoad<PlayerData>(SAVE_KEY, out var data);
+		[SerializeField] private float _health = 100;
 
-		if (!hasData)
-			return;
+		private const string SAVE_KEY = "TesterData";
 
-		transform.position = data.Position;
-		_health = data.Health;
+		private void Awake()
+		{
+			var hasKey = DataSerializer.HasKey(SAVE_KEY);
+
+			if (!hasKey)
+				return;
+
+			var data = DataSerializer.Load<Data>(SAVE_KEY);
+			transform.position = data.Position;
+			_health = data.Health;
+		}
+
+		private void OnApplicationQuit()
+		{
+			DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
+		}
 	}
 
-	// Saving
-	private void OnApplicationQuit()
+	public struct Data
 	{
-		DataSerializer.Save(SAVE_KEY, new PlayerData(transform.position, _health));
-	}
-}
+		[SerializeField, HideInInspector] private Vector3 _position;
+		[SerializeField, HideInInspector] private float _health;
 
-public struct PlayerData : ISerializable
-{
-	[SerializeField, HideInInspector] private Vector3 _position;
-	[SerializeField, HideInInspector] private float _health;
+		public Vector3 Position => _position;
+		public float Health => _health;
 
-	public Vector3 Position => _position;
-	public float Health => _health;
-
-	public PlayerData(Vector3 position, float health)
-	{
-		_position = position;
-		_health = health;
+		public Data(Vector3 position, float health)
+		{
+			_position = position;
+			_health = health;
+		}
 	}
 }
 ```
