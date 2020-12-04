@@ -96,3 +96,69 @@ public struct Data
 	}
 }
 ```
+
+## Performance test
+
+### PlayerPrefs result: 225.8494 milliseconds
+### Code:
+
+```csharp
+using Sirenix.OdinInspector;
+using System.Diagnostics;
+using UnityEngine;
+
+public class Tester : MonoBehaviour
+{
+	[SerializeField] private int _number = 0;
+
+	[Button]
+	private void Test()
+	{
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
+
+		for (int i = 0; i < 10000; i++)
+		{
+			/*DataSerializer.Save("SAVE", _number);
+			_number = DataSerializer.Load<int>("SAVE");*/
+			PlayerPrefs.SetInt("SAVE", _number);
+			_number = PlayerPrefs.GetInt("SAVE");
+		}
+
+		stopwatch.Stop();
+		print(stopwatch.Elapsed.TotalMilliseconds);
+	}
+}
+
+```
+
+### DataSerializer result: 1.3 milliseconds
+### Code:
+
+```csharp
+using Sirenix.OdinInspector;
+using System.Diagnostics;
+using ToolBox.Serialization;
+using UnityEngine;
+
+public class Tester : MonoBehaviour
+{
+	[SerializeField] private int _number = 0;
+
+	[Button]
+	private void Test()
+	{
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
+
+		for (int i = 0; i < 10000; i++)
+		{
+			DataSerializer.Save("SAVE", _number);
+			_number = DataSerializer.Load<int>("SAVE");
+		}
+
+		stopwatch.Stop();
+		print(stopwatch.Elapsed.TotalMilliseconds);
+	}
+}
+```
