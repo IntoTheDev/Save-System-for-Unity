@@ -55,47 +55,44 @@ DataSerializer.ChangeProfile(profileIndex: 1);
 using ToolBox.Serialization;
 using UnityEngine;
 
-namespace ToolBox.Testing
+public class Player : MonoBehaviour
 {
-	public class Tester : MonoBehaviour
+	[SerializeField] private float _health = 100;
+
+	private const string SAVE_KEY = "TesterData";
+
+	// Saving
+	private void Awake()
 	{
-		[SerializeField] private float _health = 100;
+		var hasKey = DataSerializer.HasKey(SAVE_KEY);
 
-		private const string SAVE_KEY = "TesterData";
+		if (!hasKey)
+			return;
 
-		// Saving
-		private void Awake()
-		{
-			var hasKey = DataSerializer.HasKey(SAVE_KEY);
-
-			if (!hasKey)
-				return;
-
-			var data = DataSerializer.Load<Data>(SAVE_KEY);
-			transform.position = data.Position;
-			_health = data.Health;
-		}
-
-		// Loading
-		private void OnApplicationQuit()
-		{
-			DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
-		}
+		var data = DataSerializer.Load<Data>(SAVE_KEY);
+		transform.position = data.Position;
+		_health = data.Health;
 	}
 
-	public struct Data
+	// Loading
+	private void OnApplicationQuit()
 	{
-		[SerializeField, HideInInspector] private Vector3 _position;
-		[SerializeField, HideInInspector] private float _health;
+		DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
+	}
+}
 
-		public Vector3 Position => _position;
-		public float Health => _health;
+public struct Data
+{
+	[SerializeField, HideInInspector] private Vector3 _position;
+	[SerializeField, HideInInspector] private float _health;
 
-		public Data(Vector3 position, float health)
-		{
-			_position = position;
-			_health = health;
-		}
+	public Vector3 Position => _position;
+	public float Health => _health;
+
+	public Data(Vector3 position, float health)
+	{
+		_position = position;
+		_health = health;
 	}
 }
 ```
