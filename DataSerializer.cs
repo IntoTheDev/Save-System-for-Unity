@@ -69,25 +69,15 @@ namespace ToolBox.Serialization
 			File.WriteAllBytes(filePath, bytes);
 		}
 
-		private static void CreateFile(int profileIndex, bool overwrite)
-		{
-			string filePath = GetFilePath(profileIndex);
-			bool isFileExists = File.Exists(filePath);
-			FileStream fileStream = null;
-
-			bool shouldCreateFile = (isFileExists && overwrite) || (!isFileExists);
-			if (shouldCreateFile)
-				fileStream = File.Create(filePath);
-
-			fileStream?.Close();
-		}
-
 		private static void LoadFile()
 		{
 			string filePath = GetFilePath(_currentProfileIndex);
 
 			if (!File.Exists(filePath))
-				CreateFile(_currentProfileIndex, true);
+			{
+				var fileStream = File.Create(filePath);
+				fileStream?.Close();
+			}
 
 			byte[] loadBytes = File.ReadAllBytes(filePath);
 			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
