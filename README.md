@@ -7,8 +7,21 @@
 - Support multiple profiles
 - Save files are encrypted 
 
-## Usage
-You need to download this package and [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of page). 
+## How to Install
+First of all install [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of page). 
+
+### Git Installation
+
+If you have Git on your computer, you can open Package Manager indside Unity, select "Add package from Git url...", and paste link ```https://github.com/IntoTheDev/Save-System-for-Unity.git```
+
+or
+
+Open the manifest.json file of your Unity project.
+Add ```"com.intothedev.savesystem": "https://github.com/IntoTheDev/Save-System-for-Unity.git"```
+
+### Manual Installation
+Download latest package from the Release section
+Import SaveSystem.unitypackage to your Unity Project
 
 ### Saving
 
