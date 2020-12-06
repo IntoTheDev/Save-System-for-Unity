@@ -23,6 +23,8 @@ Add ```"com.intothedev.savesystem": "https://github.com/IntoTheDev/Save-System-f
 Download latest package from the Release section
 Import SaveSystem.unitypackage to your Unity Project
 
+## Usage
+
 ### Saving
 
 ```csharp
