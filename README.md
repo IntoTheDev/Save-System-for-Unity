@@ -10,7 +10,7 @@
 ## How to Install
 First of all install [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of page). 
 
-### Git Installation
+### Git Installation (Best way to get latest version)
 
 If you have Git on your computer, you can open Package Manager indside Unity, select "Add package from Git url...", and paste link ```https://github.com/IntoTheDev/Save-System-for-Unity.git```
 
