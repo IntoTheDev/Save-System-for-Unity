@@ -61,7 +61,7 @@ namespace ToolBox.Serialization
 			LoadFile();
 		}
 
-		public static void SaveFile()
+		private static void SaveFile()
 		{
 			string filePath = GetFilePath(_currentProfileIndex);
 
