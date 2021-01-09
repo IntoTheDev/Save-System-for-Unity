@@ -40,6 +40,25 @@ namespace ToolBox.Serialization
 
 			return loadItem.Value;
 		}
+		
+		public static bool TryLoad<T>(string key, out T data)
+		{
+			bool hasKey;
+
+			if (_data.TryGetValue(key, out var value))
+			{
+				var loadItem = (Item<T>)value;
+				data = loadItem.Value;
+				hasKey = true;
+			}
+			else
+			{
+				hasKey = false;
+				data = default;
+			}
+
+			return hasKey;
+		}
 
 		public static bool HasKey(string key) =>
 			_data.ContainsKey(key);
