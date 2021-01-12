@@ -14,6 +14,7 @@ namespace ToolBox.Serialization
 	{
 		private static Dictionary<string, ISerializable> _data = null;
 		private static int _currentProfileIndex = 0;
+		private static string _savePath = "";
 
 		private const string FILE_NAME = "Save";
 		private const DataFormat DATA_FORMAT = DataFormat.Binary;
@@ -40,7 +41,7 @@ namespace ToolBox.Serialization
 
 			return loadItem.Value;
 		}
-		
+
 		public static bool TryLoad<T>(string key, out T data)
 		{
 			bool hasKey;
@@ -77,41 +78,36 @@ namespace ToolBox.Serialization
 			SaveFile();
 
 			_currentProfileIndex = profileIndex;
+			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
 			LoadFile();
 		}
 
 		private static void SaveFile()
 		{
-			string filePath = GetFilePath(_currentProfileIndex);
-
 			byte[] bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT);
-			File.WriteAllBytes(filePath, bytes);
+			File.WriteAllBytes(_savePath, bytes);
 		}
 
 		private static void LoadFile()
 		{
-			string filePath = GetFilePath(_currentProfileIndex);
-
-			if (!File.Exists(filePath))
+			if (!File.Exists(_savePath))
 			{
-				var fileStream = File.Create(filePath);
+				var fileStream = File.Create(_savePath);
 				fileStream?.Close();
 			}
 
-			byte[] loadBytes = File.ReadAllBytes(filePath);
+			byte[] loadBytes = File.ReadAllBytes(_savePath);
 			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
 
 			if (_data == null)
 				_data = new Dictionary<string, ISerializable>(INITIAL_SIZE);
 		}
 
-		private static string GetFilePath(int profileIndex) =>
-			Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{profileIndex}.data");
-
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void Setup()
 		{
 			_currentProfileIndex = 0;
+			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
 
 			LoadFile();
 			Application.quitting += SaveFile;
