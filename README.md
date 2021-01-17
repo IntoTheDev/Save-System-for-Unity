@@ -4,7 +4,7 @@
 - Super fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
 - As easy to use as PlayerPrefs
 - Can save pretty much everything (Vector, Quaternion, Array, List, Class, Struct, etc). Thanks to [Odin Serializer](https://odininspector.com/download) for that
-- Support multiple profiles
+- Multiple profiles
 - Save files are encrypted 
 
 ## How to Install
