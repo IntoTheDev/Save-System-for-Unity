@@ -78,7 +78,7 @@ namespace ToolBox.Serialization
 			SaveFile();
 
 			_currentProfileIndex = profileIndex;
-			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
+			GeneratePath();
 			LoadFile();
 		}
 
@@ -107,11 +107,14 @@ namespace ToolBox.Serialization
 		private static void Setup()
 		{
 			_currentProfileIndex = 0;
-			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
+			GeneratePath();
 
 			LoadFile();
 			Application.quitting += SaveFile;
 		}
+
+		private static void GeneratePath() =>
+			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
 	}
 }
 
