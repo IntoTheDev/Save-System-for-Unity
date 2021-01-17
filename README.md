@@ -85,12 +85,9 @@ public class Player : MonoBehaviour
 	// Loading
 	private void Awake()
 	{
-		var hasKey = DataSerializer.HasKey(SAVE_KEY);
-
-		if (!hasKey)
+		if (!DataSerializer.TryLoad(SAVE_KEY, out Data data))
 			return;
 
-		var data = DataSerializer.Load<Data>(SAVE_KEY);
 		transform.position = data.Position;
 		_health = data.Health;
 	}
