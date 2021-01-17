@@ -43,6 +43,13 @@ float health = DataSerializer.Load<float>("SaveKeyHere");
 ```csharp
 if (DataSerializer.HasKey("SaveKeyHere"))
 	float health = DataSerializer.Load<float>("SaveKeyHere");
+	
+// OR
+
+float health;
+
+if (DataSerializer.TryLoad("SaveKeyHere", out float value))
+	health = value;
 ```
 
 ### Delete key
