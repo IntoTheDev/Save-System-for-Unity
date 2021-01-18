@@ -70,7 +70,7 @@ DataSerializer.DeleteAll();
 DataSerializer.ChangeProfile(profileIndex: 1);
 ```
 
-## Saving complex data
+## Saving and loading complex data
 
 ```csharp
 using ToolBox.Serialization;
