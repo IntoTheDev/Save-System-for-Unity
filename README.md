@@ -20,7 +20,7 @@ Open the manifest.json file of your Unity project.
 Add ```"com.intothedev.savesystem": "https://github.com/IntoTheDev/Save-System-for-Unity.git"```
 
 ### Manual Installation (Version can be outdated)
-Download latest package from the Release section
+Download latest package from the Release section.
 Import SaveSystem.unitypackage to your Unity Project
 
 ## Usage
