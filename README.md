@@ -1,5 +1,10 @@
 # Save System for Unity
 
+### TODO
+- [ ] Assets saving/loading
+- [ ] Scene References saving/loading
+
+
 ## Features
 - Super fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README.
 - As easy to use as PlayerPrefs
