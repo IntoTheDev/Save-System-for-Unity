@@ -104,6 +104,8 @@ public class Player : MonoBehaviour
 	}
 }
 
+// Use struct or if you're using class for some reason then make a new instance when you're saving data
+// to save data at the time of saving and not at the time of exiting application
 public struct Data
 {
 	[SerializeField, HideInInspector] private Vector3 _position;
