@@ -1,15 +1,14 @@
+#if ODIN_INSPECTOR
 using Sirenix.Serialization;
+#else
+using OdinSerializer;
+#endif
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace ToolBox.Serialization
 {
-	public class Item<T> : ISerializable
-	{
-		public T Value = default;
-	}
-
 	public static class DataSerializer
 	{
 		private static Dictionary<string, ISerializable> _data = null;
@@ -84,7 +83,7 @@ namespace ToolBox.Serialization
 
 		private static void SaveFile()
 		{
-			byte[] bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT);
+			var bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT);
 			File.WriteAllBytes(_savePath, bytes);
 		}
 
@@ -96,7 +95,7 @@ namespace ToolBox.Serialization
 				fileStream?.Close();
 			}
 
-			byte[] loadBytes = File.ReadAllBytes(_savePath);
+			var loadBytes = File.ReadAllBytes(_savePath);
 			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
 
 			if (_data == null)
