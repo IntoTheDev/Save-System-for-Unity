@@ -1,4 +1,4 @@
 namespace ToolBox.Serialization
 {
-	public interface ISerializable { }
+	internal interface ISerializable { }
 }
