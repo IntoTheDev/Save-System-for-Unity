@@ -13,7 +13,7 @@
 - Save files are encrypted 
 
 ## How to Install
-First of all install [Odin Serializer](https://odininspector.com/download) (Odin Serializer is free, download button at the bottom of page). 
+First of all install [Odin Serializer](https://odininspector.com/download). Odin Serializer is free, download button at the bottom of page. Don't change default namespace! 
 
 ### Git Installation (Best way to get latest version)
 
