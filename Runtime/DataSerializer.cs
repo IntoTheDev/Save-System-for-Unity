@@ -1,10 +1,6 @@
-#if ODIN_INSPECTOR
-using Sirenix.Serialization;
-#else
-using OdinSerializer;
-#endif
 using System.Collections.Generic;
 using System.IO;
+using ToolBox.Serialization.OdinSerializer;
 using UnityEngine;
 
 namespace ToolBox.Serialization

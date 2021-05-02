@@ -2,7 +2,7 @@
     "name": "com.intothedev.savesystem",
     "rootNamespace": "",
     "references": [
-        "OdinSerializer"
+        "ToolBox.Serialization.OdinSerializer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
