@@ -12,6 +12,11 @@
 - Multiple profiles
 - Save files are encrypted 
 
+### License
+[DataSerializer](https://github.com/IntoTheDev/Save-System-for-Unity/tree/master/DataSerializer) folder is licensed under the MIT License, see [LICENSE](https://github.com/IntoTheDev/Save-System-for-Unity/blob/master/DataSerializer/LICENSE) for more information.
+
+[OdinSerializer](https://github.com/IntoTheDev/Save-System-for-Unity/tree/master/OdinSerializer) folder is licensed under the Apache-2.0 License, see [LICENSE](https://github.com/IntoTheDev/Save-System-for-Unity/blob/master/OdinSerializer/LICENSE) for more information. Odin Serializer belongs to [Team Sirenix](https://github.com/TeamSirenix)
+
 ## How to Install
 
 ### Git Installation (Best way to get latest version)
