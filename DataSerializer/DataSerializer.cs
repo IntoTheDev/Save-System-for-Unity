@@ -8,7 +8,7 @@ namespace ToolBox.Serialization
 {
 	public static class DataSerializer
 	{
-		private static Dictionary<string, ISerializable> _data = null;
+		private static Dictionary<string, Item> _data = null;
 		private static int _currentProfileIndex = 0;
 		private static string _savePath = "";
 		private static SerializationContext _serializationContext = null;
@@ -24,12 +24,12 @@ namespace ToolBox.Serialization
 		{
 			if (_data.TryGetValue(key, out var data))
 			{
-				var item = (Item<T>)data;
-				item.Value = dataToSave;
+				var item = data;
+				item.Value = SerializationUtility.SerializeValue(dataToSave, DATA_FORMAT, _serializationContext);
 			}
 			else
 			{
-				var saveItem = new Item<T> { Value = dataToSave };
+				var saveItem = new Item { Value = SerializationUtility.SerializeValue(dataToSave, DATA_FORMAT, _serializationContext) };
 				_data.Add(key, saveItem);
 			}
 		}
@@ -37,9 +37,9 @@ namespace ToolBox.Serialization
 		public static T Load<T>(string key)
 		{
 			_data.TryGetValue(key, out var value);
-			var loadItem = (Item<T>)value;
+			var loadItem = value;
 
-			return loadItem.Value;
+			return SerializationUtility.DeserializeValue<T>(loadItem.Value, DATA_FORMAT, _deserializationContext);
 		}
 
 		public static bool TryLoad<T>(string key, out T data)
@@ -48,8 +48,8 @@ namespace ToolBox.Serialization
 
 			if (_data.TryGetValue(key, out var value))
 			{
-				var loadItem = (Item<T>)value;
-				data = loadItem.Value;
+				var loadItem = value;
+				data = SerializationUtility.DeserializeValue<T>(loadItem.Value, DATA_FORMAT, _deserializationContext);
 				hasKey = true;
 			}
 			else
@@ -114,10 +114,10 @@ namespace ToolBox.Serialization
 			}
 
 			var loadBytes = File.ReadAllBytes(_savePath);
-			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT, _deserializationContext);
+			_data = SerializationUtility.DeserializeValue<Dictionary<string, Item>>(loadBytes, DATA_FORMAT, _deserializationContext);
 
 			if (_data == null)
-				_data = new Dictionary<string, ISerializable>(INITIAL_SIZE);
+				_data = new Dictionary<string, Item>(INITIAL_SIZE);
 		}
 
 		private static void GeneratePath() =>
