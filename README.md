@@ -75,7 +75,7 @@ DataSerializer.DeleteAll();
 DataSerializer.ChangeProfile(profileIndex: 1);
 ```
 
-## Saving and loading complex data
+### Saving and loading complex data
 
 ```csharp
 using ToolBox.Serialization;
@@ -119,6 +119,68 @@ public struct Data
 		_health = health;
 	}
 }
+```
+
+### Assets saving
+
+1. Open ```Assets Container``` window. To do that: Window/Assets References
+
+![image](https://user-images.githubusercontent.com/53948684/116908291-26089f00-ac5c-11eb-8bcc-a76489be7aa5.png)
+
+2. Add project folders where lies your assets you want to save. If you want to all assets be able to be saved then just add ```Assets``` folder via ```Select Folder``` button.
+
+3. Press ```Load assets from paths``` button.
+
+4. Result:
+
+![image](https://user-images.githubusercontent.com/53948684/116908619-8f88ad80-ac5c-11eb-83ac-f927afc49300.png)
+
+- Everytime you added new asset to your project and you want that asset be able to be saved then you need to repeat process above
+
+- To add more paths just press the ```Add Path``` button then select folder via ```Select Folder``` button
+
+- To delete all references you need to press ```Remove assets from container``` button
+
+## Quick example
+
+```csharp
+using System.Collections.Generic;
+using ToolBox.Serialization;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+	[SerializeField] private List<Item> _inventory = null;
+
+	private const string SAVE_KEY = "PlayerItems";
+
+	private void Awake()
+	{
+		DataSerializer.FileSaving += FileSaving;
+	
+		if (DataSerializer.TryLoad<List<Item>>(SAVE_KEY, out var items))
+		{
+			_inventory = items;
+			return;
+		}
+
+		_inventory = new List<Item>();
+	}
+
+	// Will be called before game quits
+	private void FileSaving()
+	{
+		DataSerializer.Save(SAVE_KEY, _inventory);
+	}
+}
+
+[CreateAssetMenu]
+public class Item : ScriptableObject
+{
+	[SerializeField] private string _name = string.Empty;
+	[SerializeField] private int _cost = 100;
+}
+
 ```
 
 ## Performance test
