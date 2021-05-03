@@ -6,7 +6,7 @@
 
 
 ## Features
-- Super fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README
+- Fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README
 - As easy to use as PlayerPrefs
 - Can save pretty much everything (Vector, Quaternion, Array, List, Class, Struct, etc)
 - Can save assets references
@@ -104,7 +104,6 @@ public class Player : MonoBehaviour
 	}
 }
 
-// Use struct or if you're using class for some reason then make a new instance each time you're saving
 public struct Data
 {
 	[SerializeField, HideInInspector] private Vector3 _position;
