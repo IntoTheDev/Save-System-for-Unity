@@ -1,7 +1,7 @@
 # Save System for Unity
 
 ### TODO
-- [ ] Assets saving/loading
+- [x] Assets saving/loading
 - [ ] Scene References saving/loading
 
 
