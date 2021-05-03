@@ -10,6 +10,8 @@ namespace ToolBox.Serialization
 		private static Dictionary<string, ISerializable> _data = null;
 		private static int _currentProfileIndex = 0;
 		private static string _savePath = "";
+		private static SerializationContext _serializationContext = null;
+		private static DeserializationContext _deserializationContext = null;
 
 		private const string FILE_NAME = "Save";
 		private const DataFormat DATA_FORMAT = DataFormat.Binary;
@@ -77,9 +79,24 @@ namespace ToolBox.Serialization
 			LoadFile();
 		}
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void Setup()
+		{
+			var container = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
+
+			_serializationContext = new SerializationContext { StringReferenceResolver = container };
+			_deserializationContext = new DeserializationContext { StringReferenceResolver = container };
+
+			_currentProfileIndex = 0;
+			GeneratePath();
+
+			LoadFile();
+			Application.quitting += SaveFile;
+		}
+
 		private static void SaveFile()
 		{
-			var bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT);
+			var bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT, _serializationContext);
 			File.WriteAllBytes(_savePath, bytes);
 		}
 
@@ -92,20 +109,10 @@ namespace ToolBox.Serialization
 			}
 
 			var loadBytes = File.ReadAllBytes(_savePath);
-			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT);
+			_data = SerializationUtility.DeserializeValue<Dictionary<string, ISerializable>>(loadBytes, DATA_FORMAT, _deserializationContext);
 
 			if (_data == null)
 				_data = new Dictionary<string, ISerializable>(INITIAL_SIZE);
-		}
-
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-		private static void Setup()
-		{
-			_currentProfileIndex = 0;
-			GeneratePath();
-
-			LoadFile();
-			Application.quitting += SaveFile;
 		}
 
 		private static void GeneratePath() =>
