@@ -1,8 +1,8 @@
-﻿namespace ToolBox.Serialization
+namespace ToolBox.Serialization
 {
-	internal class Item<T> : ISerializable
+	internal class Item
 	{
-		public T Value = default;
+		public byte[] Value = default;
 	}
 }
 
