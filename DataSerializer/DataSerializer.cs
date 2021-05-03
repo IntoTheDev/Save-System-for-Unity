@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using ToolBox.Serialization.OdinSerializer;
@@ -16,6 +17,8 @@ namespace ToolBox.Serialization
 		private const string FILE_NAME = "Save";
 		private const DataFormat DATA_FORMAT = DataFormat.Binary;
 		private const int INITIAL_SIZE = 64;
+
+		public static event Action FileSaving = null;
 
 		public static void Save<T>(string key, T dataToSave)
 		{
@@ -96,6 +99,8 @@ namespace ToolBox.Serialization
 
 		private static void SaveFile()
 		{
+			FileSaving?.Invoke();
+
 			var bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT, _serializationContext);
 			File.WriteAllBytes(_savePath, bytes);
 		}
