@@ -127,7 +127,7 @@ public struct Data
 
 ![image](https://user-images.githubusercontent.com/53948684/116908291-26089f00-ac5c-11eb-8bcc-a76489be7aa5.png)
 
-2. Add project folders where lies your assets you want to save. If you want to all assets be able to be saved then just add ```Assets``` folder via ```Select Folder``` button.
+2. Add project folders where lies your assets you want to save. If you want to all assets be able to be saved then just add ```Assets``` folder via ```Select Path``` button.
 
 3. Press ```Load assets from paths``` button.
 
@@ -137,7 +137,7 @@ public struct Data
 
 - Everytime you added new asset to your project and you want that asset be able to be saved then you need to repeat process above
 
-- To add more paths just press the ```Add Path``` button then select folder via ```Select Folder``` button
+- To add more paths just press the ```Add Path``` button then select folder via ```Select Path``` button
 
 - To delete all references you need to press ```Remove assets from container``` button
 
