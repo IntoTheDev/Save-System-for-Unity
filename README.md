@@ -6,12 +6,12 @@
 
 
 ## Features
-- Fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README
-- As easy to use as PlayerPrefs
 - Can save pretty much everything (Vector, Quaternion, Array, List, Class, Struct, etc)
 - Can save assets references
-- Multiple profiles
+- As easy to use as PlayerPrefs
+- Fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README
 - Save files are encrypted
+- Multiple profiles
 
 ## How to Install
 
