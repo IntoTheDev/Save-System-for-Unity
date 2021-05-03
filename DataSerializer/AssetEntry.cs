@@ -1,5 +1,3 @@
-﻿#if UNITY_EDITOR
-#endif
 using UnityEngine;
 
 namespace ToolBox.Serialization
