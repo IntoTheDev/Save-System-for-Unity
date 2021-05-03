@@ -46,7 +46,12 @@ namespace ToolBox.Serialization
 				.FindAssets("t:Object", _paths)
 				.Select(AssetDatabase.GUIDToAssetPath)
 				.Select(AssetDatabase.LoadAssetAtPath<Object>)
-				.Where(x => x != null && !x.GetType().Namespace.Contains("UnityEditor")) // Change UnityEditor to Editor?
+				.Where(x =>
+				{
+					string nspace = x.GetType().Namespace;
+
+					return x != null && (nspace == null || !nspace.Contains("UnityEditor"));
+				}) // Change UnityEditor to Editor?
 				.ToList();
 
 			List<AssetEntry> newEntries = new List<AssetEntry>();
