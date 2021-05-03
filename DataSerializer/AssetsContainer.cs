@@ -30,8 +30,13 @@ namespace ToolBox.Serialization
 
 		public bool TryResolveReference(string id, out object value)
 		{
+			value = null;
+
+			if (id == null)
+				return false;
+
 			bool contains = TryGetValue(id, out var entry);
-			value = contains ? entry.Asset : null;
+			value = entry?.Asset;
 
 			return contains;
 		}
