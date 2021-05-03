@@ -185,7 +185,7 @@ public class Item : ScriptableObject
 
 ## Performance test
 
-### PlayerPrefs result: 225.8494 milliseconds
+### PlayerPrefs result: 329 milliseconds
 ### Code:
 
 ```csharp
@@ -216,7 +216,7 @@ public class Tester : MonoBehaviour
 
 ```
 
-### DataSerializer result: 1.3 milliseconds
+### DataSerializer result: 18 milliseconds
 ### Code:
 
 ```csharp
