@@ -75,72 +75,7 @@ DataSerializer.DeleteAll();
 DataSerializer.ChangeProfile(profileIndex: 1);
 ```
 
-### Saving and loading complex data
-
-```csharp
-using ToolBox.Serialization;
-using UnityEngine;
-
-public class Player : MonoBehaviour
-{
-	[SerializeField] private float _health = 100f;
-
-	private const string SAVE_KEY = "PlayerSaveKey";
-
-	// Loading
-	private void Awake()
-	{
-		if (!DataSerializer.TryLoad(SAVE_KEY, out Data data))
-			return;
-
-		transform.position = data.Position;
-		_health = data.Health;
-	}
-
-	// Saving
-	private void OnApplicationQuit()
-	{
-		DataSerializer.Save(SAVE_KEY, new Data(transform.position, _health));
-	}
-}
-
-public struct Data
-{
-	[SerializeField, HideInInspector] private Vector3 _position;
-	[SerializeField, HideInInspector] private float _health;
-
-	public Vector3 Position => _position;
-	public float Health => _health;
-
-	public Data(Vector3 position, float health)
-	{
-		_position = position;
-		_health = health;
-	}
-}
-```
-
-### Assets saving
-
-1. Open ```Assets Container``` window. To do that: Window/Assets References
-
-![image](https://user-images.githubusercontent.com/53948684/116908291-26089f00-ac5c-11eb-8bcc-a76489be7aa5.png)
-
-2. Add project folders where lies your assets you want to save. If you want to all assets be able to be saved then just add ```Assets``` folder via ```Select Path``` button.
-
-3. Press ```Load assets from paths``` button.
-
-4. Result:
-
-![image](https://user-images.githubusercontent.com/53948684/116908619-8f88ad80-ac5c-11eb-83ac-f927afc49300.png)
-
-- Everytime you added new asset to your project and you want that asset be able to be saved then you need to repeat process above
-
-- To add more paths just press the ```Add Path``` button then select folder via ```Select Path``` button
-
-- To delete all references you need to press ```Remove assets from container``` button
-
-## Quick example
+### Example
 
 ```csharp
 using System.Collections.Generic;
@@ -149,38 +84,58 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-	[SerializeField] private List<Item> _inventory = null;
+	private struct SaveData
+	{
+		[SerializeField] private float _health;
+		[SerializeField] private Vector3 _position;
+		[SerializeField] private List<Item> _inventory;
 
-	private const string SAVE_KEY = "PlayerItems";
+		public float Health => _health;
+		public Vector3 Position => _position;
+		public List<Item> Inventory => _inventory;
+
+		public SaveData(float health, Vector3 position, List<Item> inventory)
+		{
+			_health = health;
+			_position = position;
+			_inventory = inventory;
+		}
+	}
+
+	[SerializeField] private float _health = 0f;
+	[SerializeField] private List<Item> _inventory = new List<Item>();
+
+	private const string SAVE_KEY = "PlayerSaveData";
 
 	private void Awake()
 	{
 		DataSerializer.FileSaving += FileSaving;
-	
-		if (DataSerializer.TryLoad<List<Item>>(SAVE_KEY, out var items))
-		{
-			_inventory = items;
-			return;
-		}
 
-		_inventory = new List<Item>();
+		if (DataSerializer.TryLoad<SaveData>(SAVE_KEY, out var loadedData))
+		{
+			_health = loadedData.Health;
+			transform.position = loadedData.Position;
+			_inventory = loadedData.Inventory;
+		}
 	}
 
-	// Will be called before game quits
+	// This method will be called before application quits
 	private void FileSaving()
 	{
-		DataSerializer.Save(SAVE_KEY, _inventory);
+		DataSerializer.Save(SAVE_KEY, new SaveData(_health, transform.position, _inventory));
 	}
 }
 
+// If you want to save scriptable objects or any other asset then you need to add coresponding assets to AssetsContainer. See guide below
 [CreateAssetMenu]
 public class Item : ScriptableObject
 {
 	[SerializeField] private string _name = string.Empty;
 	[SerializeField] private int _cost = 100;
 }
-
 ```
+
+### How to make asset saveable
 
 ## Performance test
 
