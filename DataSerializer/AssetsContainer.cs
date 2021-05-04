@@ -36,7 +36,7 @@ namespace ToolBox.Serialization
 				return false;
 
 			bool contains = TryGetValue(id, out var entry);
-			value = entry?.Asset;
+			value = entry.Asset;
 
 			return contains;
 		}
@@ -45,6 +45,11 @@ namespace ToolBox.Serialization
 		// TODO: Make everything with loops and lists instead of LINQ
 		public void LoadAssets()
 		{
+			if (_paths == null || _paths.Length == 0)
+				return;
+
+			_paths = _paths.Where(x => !string.IsNullOrEmpty(x) && AssetDatabase.IsValidFolder(x)).ToArray();
+
 			var assets = new List<Object>();
 
 			assets = AssetDatabase
