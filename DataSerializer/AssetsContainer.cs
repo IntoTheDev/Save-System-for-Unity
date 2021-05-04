@@ -45,10 +45,13 @@ namespace ToolBox.Serialization
 		// TODO: Make everything with loops and lists instead of LINQ
 		public void LoadAssets()
 		{
-			if (_paths == null || _paths.Length == 0)
+			if (_paths == null)
 				return;
 
 			_paths = _paths.Where(x => !string.IsNullOrEmpty(x) && AssetDatabase.IsValidFolder(x)).ToArray();
+
+			if (_paths.Length == 0)
+				return;
 
 			var assets = new List<Object>();
 
