@@ -9,7 +9,7 @@ namespace ToolBox.Serialization.Editor
 		private AssetsContainer _provider = null;
 		private Vector2 _scroll = default;
 
-		[MenuItem("Window/Assets References")]
+		[MenuItem("Window/Assets Container")]
 		static void ShowWindow() =>
 			GetWindow<AssetsContainerEditor>("Assets Container").Show();
 
