@@ -126,7 +126,8 @@ public class Player : MonoBehaviour
 	}
 }
 
-// If you want to save scriptable objects or any other asset then you need to add coresponding assets to AssetsContainer. See guide below
+// If you want to make scriptable object or any other asset saveable then you need to add that asset to Assets Container. 
+// See guide below
 [CreateAssetMenu]
 public class Item : ScriptableObject
 {
@@ -136,6 +137,19 @@ public class Item : ScriptableObject
 ```
 
 ### How to make asset saveable
+
+1. Open ```Assets Container``` window. Window/Assets Container. Window looks like this:
+
+![image](https://user-images.githubusercontent.com/53948684/117006513-f7dd9a80-ad01-11eb-8c14-bd665a88dfe2.png)
+
+2. Select path where your assets stored. If you already have path field then press the ```Select Path``` button or ```Add Path``` if not. In my case path is ```Assets/ScriptableObjects/Items```.
+
+3. Press the ```Load assets at paths``` button.
+
+4. That's all!
+
+![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
+
 
 ## Performance test
 
