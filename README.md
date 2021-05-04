@@ -75,7 +75,7 @@ DataSerializer.DeleteAll();
 DataSerializer.ChangeProfile(profileIndex: 1);
 ```
 
-### Example
+### Complex example
 
 ```csharp
 using System.Collections.Generic;
