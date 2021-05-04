@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -13,17 +13,15 @@ namespace ToolBox.Serialization.Editor
 		static void ShowWindow() =>
 			GetWindow<AssetsContainerEditor>("Assets Container").Show();
 
-		private void OnEnable()
-		{
+		private void OnEnable() =>
 			_provider = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
-		}
 
 		private void OnGUI()
 		{
 			var obj = new SerializedObject(_provider);
 			obj.Update();
-			var pathsProperty = obj.FindProperty("_paths");
 			var objectsProperty = obj.FindProperty("_savedAssets");
+			var pathsProperty = obj.FindProperty("_paths");
 
 			DrawPaths(pathsProperty);
 			DrawButtons();
@@ -42,17 +40,19 @@ namespace ToolBox.Serialization.Editor
 				EditorGUILayout.BeginHorizontal();
 
 				var element = pathsProperty.GetArrayElementAtIndex(i);
-				EditorGUILayout.PropertyField(element);
+				EditorGUILayout.PropertyField(element, new GUIContent($"Path {i}"));
 
 				if (GUILayout.Button(selectContent, EditorStyles.miniButtonLeft, GUILayout.Width(75f)))
 				{
 					string path = EditorUtility.OpenFolderPanel("Select path", "Assets", "");
 
-					if (path != "Assets")
+					if (path != "Assets" || path.Length != 0)
 						path = path.Substring(path.IndexOf("Assets"));
 
 					if (AssetDatabase.IsValidFolder(path))
 						element.stringValue = path;
+					else
+						pathsProperty.DeleteArrayElementAtIndex(i);
 				}
 
 				if (GUILayout.Button(removeContent, EditorStyles.miniButtonLeft, GUILayout.Width(30f)))
@@ -71,14 +71,12 @@ namespace ToolBox.Serialization.Editor
 		{
 			EditorGUILayout.BeginHorizontal();
 
-			if (GUILayout.Button("Load assets from paths"))
-			{
+			if (GUILayout.Button("Load assets at paths"))
 				_provider.LoadAssets();
-			}
 
 			if (GUILayout.Button("Remove assets from container"))
 			{
-				if (EditorUtility.DisplayDialog("Clear", "Do you really want to clear all referenced assets?", "Yes", "No"))
+				if (EditorUtility.DisplayDialog("Clear", "Do you really want to remove all referenced assets?", "Yes", "No"))
 					_provider.Clear();
 			}
 
