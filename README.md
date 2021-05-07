@@ -1,8 +1,9 @@
 # Save System for Unity
 
 ### TODO
-- [x] Assets saving/loading
-- [ ] Scene References saving/loading
+- [x] Assets References
+- [ ] Component that automaticaly will save/load components with implemented interface
+- [ ] Scene References
 
 
 ## Features
