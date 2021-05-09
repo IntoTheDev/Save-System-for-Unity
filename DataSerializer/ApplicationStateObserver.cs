@@ -22,6 +22,6 @@ namespace ToolBox.Serialization
 			if (!focus)
 				OnQuit?.Invoke();
 		}
-	}
 #endif
+	}
 }
