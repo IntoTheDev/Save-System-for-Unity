@@ -25,11 +25,11 @@ namespace ToolBox.Serialization
 			if (_data.TryGetValue(key, out var data))
 			{
 				var item = data;
-				item.Value = SerializationUtility.SerializeValue(dataToSave, DATA_FORMAT, _serializationContext);
+				item.Value = Serialize(dataToSave);
 			}
 			else
 			{
-				var saveItem = new Item { Value = SerializationUtility.SerializeValue(dataToSave, DATA_FORMAT, _serializationContext) };
+				var saveItem = new Item { Value = Serialize(dataToSave) };
 				_data.Add(key, saveItem);
 			}
 		}
@@ -39,7 +39,7 @@ namespace ToolBox.Serialization
 			_data.TryGetValue(key, out var value);
 			var loadItem = value;
 
-			return SerializationUtility.DeserializeValue<T>(loadItem.Value, DATA_FORMAT, _deserializationContext);
+			return Deserialize<T>(loadItem.Value);
 		}
 
 		public static bool TryLoad<T>(string key, out T data)
@@ -49,7 +49,7 @@ namespace ToolBox.Serialization
 			if (_data.TryGetValue(key, out var value))
 			{
 				var loadItem = value;
-				data = SerializationUtility.DeserializeValue<T>(loadItem.Value, DATA_FORMAT, _deserializationContext);
+				data = Deserialize<T>(loadItem.Value);
 				hasKey = true;
 			}
 			else
@@ -94,14 +94,22 @@ namespace ToolBox.Serialization
 			GeneratePath();
 
 			LoadFile();
-			Application.quitting += SaveFile;
+		}
+
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void CreateObserver()
+		{
+			var obj = new GameObject("ApplicationStateObserver");
+			var observer = obj.AddComponent<ApplicationStateObserver>();
+			UnityEngine.Object.DontDestroyOnLoad(obj);
+			observer.OnQuit += SaveFile;
 		}
 
 		private static void SaveFile()
 		{
 			FileSaving?.Invoke();
 
-			var bytes = SerializationUtility.SerializeValue(_data, DATA_FORMAT, _serializationContext);
+			var bytes = Serialize(_data);
 			File.WriteAllBytes(_savePath, bytes);
 		}
 
@@ -113,8 +121,8 @@ namespace ToolBox.Serialization
 				fileStream?.Close();
 			}
 
-			var loadBytes = File.ReadAllBytes(_savePath);
-			_data = SerializationUtility.DeserializeValue<Dictionary<string, Item>>(loadBytes, DATA_FORMAT, _deserializationContext);
+			var bytes = File.ReadAllBytes(_savePath);
+			_data = Deserialize<Dictionary<string, Item>>(bytes);
 
 			if (_data == null)
 				_data = new Dictionary<string, Item>(INITIAL_SIZE);
@@ -122,6 +130,22 @@ namespace ToolBox.Serialization
 
 		private static void GeneratePath() =>
 			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
+
+		private static byte[] Serialize<T>(T data)
+		{
+			var bytes = SerializationUtility.SerializeValue(data, DATA_FORMAT, _serializationContext);
+			_serializationContext.ResetToDefault();
+
+			return bytes;
+		}
+
+		private static T Deserialize<T>(byte[] bytes)
+		{
+			var data = SerializationUtility.DeserializeValue<T>(bytes, DATA_FORMAT, _deserializationContext);
+			_deserializationContext.Reset();
+
+			return data;
+		}
 	}
 }
 
