@@ -2,6 +2,7 @@
 
 ### TODO
 - [x] Assets References
+- [ ] AOT support
 - [ ] Component that automaticaly will save/load components with implemented interface
 - [ ] Scene References
 
