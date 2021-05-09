@@ -13,6 +13,7 @@ namespace ToolBox.Serialization
 		private static string _savePath = "";
 		private static SerializationContext _serializationContext = null;
 		private static DeserializationContext _deserializationContext = null;
+		private static AssetsContainer _container = null;
 
 		private const string FILE_NAME = "Save";
 		private const DataFormat DATA_FORMAT = DataFormat.Binary;
@@ -85,10 +86,10 @@ namespace ToolBox.Serialization
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void Setup()
 		{
-			var container = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
+			_container = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
 
-			_serializationContext = new SerializationContext { StringReferenceResolver = container };
-			_deserializationContext = new DeserializationContext { StringReferenceResolver = container };
+			_serializationContext = new SerializationContext { StringReferenceResolver = _container };
+			_deserializationContext = new DeserializationContext { StringReferenceResolver = _container };
 
 			_currentProfileIndex = 0;
 			GeneratePath();
@@ -135,6 +136,7 @@ namespace ToolBox.Serialization
 		{
 			var bytes = SerializationUtility.SerializeValue(data, DATA_FORMAT, _serializationContext);
 			_serializationContext.ResetToDefault();
+			_serializationContext.StringReferenceResolver = _container;
 
 			return bytes;
 		}
@@ -143,6 +145,7 @@ namespace ToolBox.Serialization
 		{
 			var data = SerializationUtility.DeserializeValue<T>(bytes, DATA_FORMAT, _deserializationContext);
 			_deserializationContext.Reset();
+			_deserializationContext.StringReferenceResolver = _container;
 
 			return data;
 		}
