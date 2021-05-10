@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace ToolBox.Serialization.Editor
 {
-	internal class AssetsContainerEditor : EditorWindow
+	internal sealed class AssetsContainerEditor : EditorWindow
 	{
 		private AssetsContainer _provider = null;
 		private Vector2 _scroll = default;
 
 		[MenuItem("Window/Assets Container")]
-		static void ShowWindow() =>
+		private static void ShowWindow() =>
 			GetWindow<AssetsContainerEditor>("Assets Container").Show();
 
 		private void OnEnable() =>

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ToolBox.Serialization
 {
-	internal class AssetsContainer : ScriptableObject, IExternalStringReferenceResolver
+	internal sealed class AssetsContainer : ScriptableObject, IExternalStringReferenceResolver
 	{
 		[SerializeField] private AssetEntry[] _savedAssets = null;
 		[SerializeField] private string[] _paths = null;
@@ -19,13 +19,11 @@ namespace ToolBox.Serialization
 		{
 			id = null;
 
-			if (value is Object obj && TryGetValue(obj, out var entry))
-			{
-				id = entry.Guid;
-				return true;
-			}
-
-			return false;
+			if (!(value is Object obj) || !TryGetValue(obj, out var entry)) 
+				return false;
+			
+			id = entry.Guid;
+			return true;
 		}
 
 		public bool TryResolveReference(string id, out object value)
@@ -53,7 +51,7 @@ namespace ToolBox.Serialization
 			if (_paths.Length == 0)
 				return;
 
-			var assets = new List<Object>();
+			List<Object> assets;
 
 			assets = AssetDatabase
 				.FindAssets("t:Object", _paths)
@@ -61,20 +59,20 @@ namespace ToolBox.Serialization
 				.Select(AssetDatabase.LoadAssetAtPath<Object>)
 				.Where(x =>
 				{
-					string nspace = x.GetType().Namespace;
+					string fileNamespace = x.GetType().Namespace;
 
-					return x != null && (nspace == null || !nspace.Contains("UnityEditor"));
+					return x != null && (fileNamespace == null || !fileNamespace.Contains("UnityEditor"));
 				}) // Change UnityEditor to Editor?
 				.ToList();
 
-			List<AssetEntry> newEntries = new List<AssetEntry>();
+			var newEntries = new List<AssetEntry>();
 
 			foreach (var asset in assets)
 			{
 				string path = AssetDatabase.GetAssetPath(asset);
 				string guid = AssetDatabase.AssetPathToGUID(path);
 
-				if (!TryGetValue(asset, out var _))
+				if (!TryGetValue(asset, out _))
 					newEntries.Add(new AssetEntry(guid, asset));
 
 				var childAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(asset));
@@ -83,10 +81,9 @@ namespace ToolBox.Serialization
 				{
 					var child = childAssets[i];
 
-					if (!TryGetValue(child, out var _))
+					if (!TryGetValue(child, out _))
 					{
 						string childGuid = System.Guid.NewGuid().ToString();
-
 						newEntries.Add(new AssetEntry(childGuid, child));
 					}
 				}
@@ -95,8 +92,7 @@ namespace ToolBox.Serialization
 			ArrayUtility.AddRange(ref _savedAssets, newEntries.ToArray());
 			EditorUtility.SetDirty(this);
 		}
-
-		[ContextMenu("Clear")]
+		
 		public void Clear()
 		{
 			_savedAssets = new AssetEntry[0];

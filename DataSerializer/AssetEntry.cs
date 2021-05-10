@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ToolBox.Serialization
 {
 	[System.Serializable]
-	internal class AssetEntry
+	internal sealed class AssetEntry
 	{
 		[SerializeField] private string _guid = string.Empty;
 		[SerializeField] private Object _asset = null;

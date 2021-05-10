@@ -10,7 +10,7 @@ namespace ToolBox.Serialization
 	{
 		private static Dictionary<string, Item> _data = null;
 		private static int _currentProfileIndex = 0;
-		private static string _savePath = "";
+		private static string _savePath = string.Empty;
 		private static SerializationContext _serializationContext = null;
 		private static DeserializationContext _deserializationContext = null;
 		private static AssetsContainer _container = null;
@@ -25,8 +25,7 @@ namespace ToolBox.Serialization
 		{
 			if (_data.TryGetValue(key, out var data))
 			{
-				var item = data;
-				item.Value = Serialize(dataToSave);
+				data.Value = Serialize(dataToSave);
 			}
 			else
 			{
@@ -38,9 +37,8 @@ namespace ToolBox.Serialization
 		public static T Load<T>(string key)
 		{
 			_data.TryGetValue(key, out var value);
-			var loadItem = value;
 
-			return Deserialize<T>(loadItem.Value);
+			return Deserialize<T>(value.Value);
 		}
 
 		public static bool TryLoad<T>(string key, out T data)
@@ -49,14 +47,13 @@ namespace ToolBox.Serialization
 
 			if (_data.TryGetValue(key, out var value))
 			{
-				var loadItem = value;
-				data = Deserialize<T>(loadItem.Value);
+				data = Deserialize<T>(value.Value);
 				hasKey = true;
 			}
 			else
 			{
-				hasKey = false;
 				data = default;
+				hasKey = false;
 			}
 
 			return hasKey;
@@ -90,10 +87,8 @@ namespace ToolBox.Serialization
 
 			_serializationContext = new SerializationContext { StringReferenceResolver = _container };
 			_deserializationContext = new DeserializationContext { StringReferenceResolver = _container };
-
-			_currentProfileIndex = 0;
+			
 			GeneratePath();
-
 			LoadFile();
 		}
 
@@ -123,10 +118,7 @@ namespace ToolBox.Serialization
 			}
 
 			var bytes = File.ReadAllBytes(_savePath);
-			_data = Deserialize<Dictionary<string, Item>>(bytes);
-
-			if (_data == null)
-				_data = new Dictionary<string, Item>(INITIAL_SIZE);
+			_data = Deserialize<Dictionary<string, Item>>(bytes) ?? new Dictionary<string, Item>(INITIAL_SIZE);
 		}
 
 		private static void GeneratePath() =>

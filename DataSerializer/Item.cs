@@ -1,6 +1,6 @@
 namespace ToolBox.Serialization
 {
-	internal class Item
+	internal sealed class Item
 	{
 		public byte[] Value = default;
 	}
