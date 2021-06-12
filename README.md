@@ -2,7 +2,7 @@
 
 ### TODO
 - [x] Assets References
-- [ ] AOT support
+- [x] AOT support
 - [ ] Component that automaticaly will save/load components with implemented interface
 - [ ] Scene References
 
@@ -86,24 +86,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-	private struct SaveData
-	{
-		[SerializeField] private float _health;
-		[SerializeField] private Vector3 _position;
-		[SerializeField] private List<Item> _inventory;
-
-		public float Health => _health;
-		public Vector3 Position => _position;
-		public List<Item> Inventory => _inventory;
-
-		public SaveData(float health, Vector3 position, List<Item> inventory)
-		{
-			_health = health;
-			_position = position;
-			_inventory = inventory;
-		}
-	}
-
 	[SerializeField] private float _health = 0f;
 	[SerializeField] private List<Item> _inventory = new List<Item>();
 
@@ -136,6 +118,24 @@ public class Item : ScriptableObject
 	[SerializeField] private string _name = string.Empty;
 	[SerializeField] private int _cost = 100;
 }
+
+public struct SaveData
+{
+    [SerializeField] private float _health;
+    [SerializeField] private Vector3 _position;
+    [SerializeField] private List<Item> _inventory;
+
+    public float Health => _health;
+    public Vector3 Position => _position;
+    public List<Item> Inventory => _inventory;
+    
+    public SaveData(float health, Vector3 position, List<Item> inventory)
+    {
+        _health = health;
+        _position = position;
+        _inventory = inventory;
+    }
+}
 ```
 
 ### How to make asset saveable
@@ -152,6 +152,32 @@ public class Item : ScriptableObject
 
 ![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
 
+### AOT platforms
+
+You need to create simple C# class and implement ```ITypeProvider``` interface. Then you need to add types (except primitive) that will be saved in your game.
+
+Example for case above
+
+```csharp
+using System;
+using System.Collections.Generic;
+using ToolBox.Serialization;
+using UnityEngine;
+
+public sealed class TestProvider : ITypeProvider
+{
+    public Type[] GetTypes()
+    {
+        return new Type[]
+        {
+            typeof(SaveData),
+            typeof(Vector3),
+            typeof(List<Item>)
+        };
+    }
+}
+
+```
 
 ## Performance test
 
