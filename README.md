@@ -154,7 +154,7 @@ public struct SaveData
 
 ### AOT platforms
 
-You need to create simple C# class and implement ```ITypeProvider``` interface. Then you need to add types (except primitive) that will be saved in your game.
+You need to create a simple C# class and implement ```ITypeProvider``` interface. Then you need to add types (except primitive ones) that will be saved in your game.
 
 Example for case above
 
