@@ -3,8 +3,7 @@
 ### TODO
 - [x] Assets References
 - [x] AOT support
-- [ ] Component that automaticaly will save/load components with implemented interface
-- [ ] Scene References
+- [ ] Upload MessagePack version to separate branch? MessagePack version has better performance and less file size
 
 
 ## Features
