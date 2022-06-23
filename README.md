@@ -3,7 +3,7 @@
 ### TODO
 - [x] Assets References
 - [x] AOT support
-- [ ] Upload MessagePack version to separate branch? MessagePack version has better performance and less file size
+- [x] Upload MessagePack version to separate branch? MessagePack version has better performance and less file size (WIP)
 
 
 ## Features
