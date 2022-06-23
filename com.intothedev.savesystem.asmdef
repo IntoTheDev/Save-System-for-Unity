@@ -1,0 +1,17 @@
+{
+    "name": "com.intothedev.savesystem",
+    "rootNamespace": "",
+    "references": [
+        "MessagePack",
+        "MessagePack.Annotations"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
