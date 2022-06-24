@@ -101,4 +101,64 @@ public class Player : MonoBehaviour
 
 ## Performance test
 
-(TODO)
+### PlayerPrefs result: 00:00:00.0429685
+### Code:
+
+```csharp
+using Sirenix.OdinInspector;
+using System.Diagnostics;
+using UnityEngine;
+
+public class Tester : MonoBehaviour
+{
+    [SerializeField] private int _number;
+
+    [Button]
+    private void Test()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        stopwatch.Start();
+
+        for (var i = 0; i < 10000; i++)
+        {
+            PlayerPrefs.SetInt("SAVE", _number);
+            _number = PlayerPrefs.GetInt("SAVE");
+        }
+
+        stopwatch.Stop();
+        print(stopwatch.Elapsed.ToString());
+    }
+}
+```
+
+### DataSerializer result: 00:00:00.0035277
+### Code:
+
+```csharp
+using Sirenix.OdinInspector;
+using System.Diagnostics;
+using MessagePack;
+using ToolBox.Serialization;
+using UnityEngine;
+
+public class Tester : MonoBehaviour
+{
+    [SerializeField, Key(0)] private int _number;
+
+    [Button]
+    private void Test()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        stopwatch.Start();
+
+        for (var i = 0; i < 10000; i++)
+        {
+            DataSerializer.Save("SAVE", _number);
+            _number = DataSerializer.Load<int>("SAVE");
+        }
+
+        stopwatch.Stop();
+        print(stopwatch.Elapsed.ToString());
+    }
+}
+```
