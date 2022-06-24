@@ -3,6 +3,7 @@
 ### TODO
 - [x] Assets References
 - [x] AOT support
+- [ ] Test with Desktop and Mobile builds. Mono and IL2CPP
 
 
 ## Features
