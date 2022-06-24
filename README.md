@@ -33,8 +33,53 @@ Download latest package from the Release section.
 Import SaveSystem.unitypackage into your Unity Project
 
 
-## API Examples
-(TODO)
+## API Example
+```csharp
+[CreateAssetMenu, MessagePackFormatter(typeof(AssetFormatter<Item>))]
+public class Item : ScriptableObject
+{
+    [SerializeField] private string _name;
+    [SerializeField] private int _cost;
+}
+
+[MessagePackObject, Serializable]
+public class PlayerData
+{
+    [Key(0), SerializeField] private string _name;
+    [Key(1), SerializeField] private string _level;
+    [Key(2), SerializeField] private List<Item> _inventory;
+    [Key(3), SerializeField, MessagePackFormatter(typeof(AssetFormatter<Sprite>))] private Sprite _icon;
+}
+
+public class Player : MonoBehaviour
+{
+    [SerializeField] private PlayerData _heroData;
+
+    private void Awake()
+    {
+        // There's also async version
+        DataSerializer.LoadFile(fileName: "Save");
+    }
+
+    private void OnApplicationQuit()
+    {
+        // There's also async version
+        DataSerializer.SaveFile(fileName: "Save");
+    }
+
+    [Button]
+    private void Save()
+    {
+        DataSerializer.Save(key: "PlayerData", _heroData);
+    }
+
+    [Button]
+    private void Load()
+    {
+        _heroData = DataSerializer.Load<PlayerData>(key: "PlayerData");
+    }
+}
+```
 
 ### How to make asset saveable
 
@@ -48,24 +93,7 @@ Import SaveSystem.unitypackage into your Unity Project
 
 ![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
 
-4. Specify formatter for a field or a class itself
-```csharp
-[MessagePackObject, Serializable]
-public class HeroData
-{
-    [Key(0)] public string Name;
-    [Key(1)] public int Age;
-
-    [Key(2), MessagePackFormatter(typeof(AssetFormatter<Sprite>))]
-    public Sprite Icon;
-}
-
-[MessagePackFormatter(typeof(AssetFormatter<SomeScriptableObject>))]
-public class SomeScriptableObject : ScriptableObject
-{
-    
-}
-```
+4. Specify formatter for a field or a class itself like in the API example
 
 ### AOT platforms
 
