@@ -48,7 +48,24 @@ Import SaveSystem.unitypackage into your Unity Project
 
 ![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
 
-4. Specify formatter for a field or a class itself (TODO)
+4. Specify formatter for a field or a class itself
+```csharp
+[MessagePackObject, Serializable]
+public class HeroData
+{
+    [Key(0)] public string Name;
+    [Key(1)] public int Age;
+
+    [Key(2), MessagePackFormatter(typeof(AssetFormatter<Sprite>))]
+    public Sprite Icon;
+}
+
+[MessagePackFormatter(typeof(AssetFormatter<SomeScriptableObject>))]
+public class SomeScriptableObject : ScriptableObject
+{
+    
+}
+```
 
 ### AOT platforms
 
