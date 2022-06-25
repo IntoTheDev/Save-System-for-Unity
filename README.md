@@ -54,30 +54,24 @@ public class PlayerData
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private PlayerData _heroData;
+    [SerializeField] private PlayerData _playerData;
 
     private void Awake()
     {
         // There's also async version
+        // Usually LoadFile will be called from a different place (e.g load menu, bootstrap) but for simplicity of example I called it here
         DataSerializer.LoadFile(fileName: "Save");
+        
+        _playerData = DataSerializer.Load<PlayerData>(key: "PlayerData");
     }
 
     private void OnApplicationQuit()
-    {
+    {     
+        DataSerializer.Save(key: "PlayerData", _playerData);
+        
         // There's also async version
+        // Usually SaveFile will be called from a different place (e.g save menu) but for simplicity of example I called it here
         DataSerializer.SaveFile(fileName: "Save");
-    }
-
-    [Button]
-    private void Save()
-    {
-        DataSerializer.Save(key: "PlayerData", _heroData);
-    }
-
-    [Button]
-    private void Load()
-    {
-        _heroData = DataSerializer.Load<PlayerData>(key: "PlayerData");
     }
 }
 ```
