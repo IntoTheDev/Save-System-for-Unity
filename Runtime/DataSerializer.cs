@@ -103,6 +103,7 @@ namespace ToolBox.Serialization
             if (TryDeserializeData(bytes, out var data))
                 _data = data;
         }
+        
         public static async Task LoadFileAsync(string fileName, CancellationToken token = default)
         {
             var path = CreatePath(fileName);
