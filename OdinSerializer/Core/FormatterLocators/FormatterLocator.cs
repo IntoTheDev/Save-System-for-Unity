@@ -84,7 +84,7 @@ namespace ToolBox.Serialization.OdinSerializer
                         // Filter out various core .NET libraries and Unity engine assemblies
                         continue;
                     }
-                    else if (ass.GetName().Name == FormatterEmitter.PRE_EMITTED_ASSEMBLY_NAME || ass.IsDefined(typeof(EmittedAssemblyAttribute), true))
+                    else if (ass.GetName().Name == FormatterEmitter.PRE_EMITTED_ASSEMBLY_NAME || ass.SafeIsDefined(typeof(EmittedAssemblyAttribute), true))
                     {
                         // Only include pre-emitted formatters if we are on an AOT platform.
                         // Pre-emitted formatters will not work in newer .NET runtimes due to
@@ -205,6 +205,7 @@ namespace ToolBox.Serialization.OdinSerializer
         /// This can be used to hook into and extend the serialization system's formatter resolution logic.
         /// </summary>
         [Obsolete("Use the new IFormatterLocator interface instead, and register your custom locator with the RegisterFormatterLocator assembly attribute.", true)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static event Func<Type, IFormatter> FormatterResolve
         {
             add { throw new NotSupportedException(); }
