@@ -3,7 +3,7 @@
 ### TODO
 - [x] Assets References
 - [x] AOT support
-- [ ] Test with Desktop and Mobile builds. Mono and IL2CPP
+- [ ] Test with Desktop and Mobile builds. Mono and IL2CPP. (Finally managed to get my hands on this branch again. Testing a few things for now. I'll release this branch in 2023 Q1)
 
 
 ## Features
