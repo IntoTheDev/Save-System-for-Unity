@@ -94,6 +94,36 @@ public class Player : MonoBehaviour
 
 [See](https://github.com/neuecc/MessagePack-CSharp#aot-code-generation-support-for-unityxamarin)
 
+```csharp
+using MessagePack;
+using MessagePack.Resolvers;
+using MessagePack.Unity;
+using MessagePack.Unity.Extension;
+using Serializer;
+using ToolBox.Serialization;
+using UnityEngine;
+
+public static class MessagePackStartup
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void Setup()
+    {
+        StaticCompositeResolver.Instance.Register(
+            GeneratedResolver.Instance,
+            UnityBlitResolver.Instance,
+            UnityResolver.Instance,
+            StandardResolver.Instance,
+            DataSerializerResolver.Instance
+        );
+
+        var options = ContractlessStandardResolverAllowPrivate.Options.WithResolver(StaticCompositeResolver.Instance);
+        
+        DataSerializer.Options = options;
+        MessagePackSerializer.DefaultOptions = options;
+    }
+}
+```
+
 ## Performance test
 
 ### PlayerPrefs result: 00:00:00.0429685
