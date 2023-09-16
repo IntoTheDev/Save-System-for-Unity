@@ -11,43 +11,52 @@ namespace ToolBox.Serialization
 {
 	internal sealed class AssetsContainer : ScriptableObject
 	{
-		[SerializeField] private AssetEntry[] _savedAssets = Array.Empty<AssetEntry>();
+		[SerializeField] private AssetEntry[] _savedAssets;
 		[SerializeField] private string[] _paths;
 
-		public bool TryResolveId(object value, out string id)
+		public bool TryResolveId(Object value, out string id)
 		{
 			id = null;
 
-			if (value is not Object obj || !TryGetValue(obj, out var entry)) 
+			if (!TryGetByObject(value, out var entry))
+			{
 				return false;
-			
+			}
+
 			id = entry.Guid;
 			return true;
 		}
 
-		public bool TryResolveReference(string id, out object value)
+		public bool TryResolveReference(string id, out Object value)
 		{
 			value = null;
-
-			if (id == null)
+			
+			if (!TryGetById(id, out var entry))
+			{
 				return false;
+			}
 
-			var contains = TryGetValue(id, out var entry);
 			value = entry.Asset;
-
-			return contains;
+			return true;
 		}
 
 #if UNITY_EDITOR
 		public void LoadAssets()
 		{
 			if (_paths == null)
+			{
 				return;
+			}
 
 			_paths = _paths.Where(x => !string.IsNullOrEmpty(x) && AssetDatabase.IsValidFolder(x)).ToArray();
 
 			if (_paths.Length == 0)
+			{
 				return;
+			}
+			
+			// ReSharper disable once UseArrayEmptyMethod
+			_savedAssets ??= new AssetEntry[0];
 
 			var assets = AssetDatabase
 				.FindAssets("t:Object", _paths)
@@ -65,21 +74,21 @@ namespace ToolBox.Serialization
 
 			foreach (var asset in assets)
 			{
-				var path = AssetDatabase.GetAssetPath(asset);
-				var guid = AssetDatabase.AssetPathToGUID(path);
-
-				if (!TryGetValue(asset, out _))
-					newEntries.Add(new AssetEntry(guid, asset));
-
-				var childAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(asset));
-
-				foreach (var child in childAssets)
+				if (!TryGetByObject(asset, out _))
 				{
-					if (TryGetValue(child, out _)) 
+					newEntries.Add(new AssetEntry(Guid.NewGuid().ToString(), asset));
+				}
+
+				var children = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(asset));
+
+				foreach (var child in children)
+				{
+					if (TryGetByObject(child, out _))
+					{
 						continue;
+					}
 					
-					var childGuid = Guid.NewGuid().ToString();
-					newEntries.Add(new AssetEntry(childGuid, child));
+					newEntries.Add(new AssetEntry(Guid.NewGuid().ToString(), child));
 				}
 			}
 
@@ -89,18 +98,20 @@ namespace ToolBox.Serialization
 		
 		public void Clear()
 		{
-			_savedAssets = Array.Empty<AssetEntry>();
+			_savedAssets = null;
 			EditorUtility.SetDirty(this);
 		}
 #endif
 
-		private bool TryGetValue(string guid, out AssetEntry entry)
+		private bool TryGetById(string guid, out AssetEntry entry)
 		{
 			foreach (var asset in _savedAssets)
 			{
-				if (asset.Guid != guid) 
+				if (asset.Guid != guid)
+				{
 					continue;
-				
+				}
+
 				entry = asset;
 				return true;
 			}
@@ -109,13 +120,15 @@ namespace ToolBox.Serialization
 			return false;
 		}
 
-		private bool TryGetValue(Object obj, out AssetEntry entry)
+		private bool TryGetByObject(Object value, out AssetEntry entry)
 		{
 			foreach (var asset in _savedAssets)
 			{
-				if (asset.Asset != obj) 
+				if (asset.Asset != value)
+				{
 					continue;
-				
+				}
+
 				entry = asset;
 				return true;
 			}
