@@ -23,9 +23,10 @@ namespace ToolBox.Serialization.Editor
 		private void OnGUI()
 		{
 			var obj = new SerializedObject(_provider);
-			obj.Update();
 			var objectsProperty = obj.FindProperty("_savedAssets");
 			var pathsProperty = obj.FindProperty("_paths");
+			
+			obj.Update();
 
 			DrawPaths(pathsProperty);
 			DrawButtons();
@@ -39,7 +40,7 @@ namespace ToolBox.Serialization.Editor
 			var selectContent = new GUIContent("Select Path");
 			var removeContent = new GUIContent("x");
 
-			for (int i = 0; i < pathsProperty.arraySize; i++)
+			for (var i = 0; i < pathsProperty.arraySize; i++)
 			{
 				EditorGUILayout.BeginHorizontal();
 
@@ -48,19 +49,27 @@ namespace ToolBox.Serialization.Editor
 
 				if (GUILayout.Button(selectContent, EditorStyles.miniButtonLeft, GUILayout.Width(75f)))
 				{
-					string path = EditorUtility.OpenFolderPanel("Select path", "Assets", "");
+					var path = EditorUtility.OpenFolderPanel("Select path", "Assets", "");
 
 					if (path != "Assets" || path.Length != 0)
+					{
 						path = path.Substring(path.IndexOf("Assets"));
+					}
 
 					if (AssetDatabase.IsValidFolder(path))
+					{
 						element.stringValue = path;
+					}
 					else
+					{
 						pathsProperty.DeleteArrayElementAtIndex(i);
+					}
 				}
 
 				if (GUILayout.Button(removeContent, EditorStyles.miniButtonLeft, GUILayout.Width(30f)))
+				{
 					pathsProperty.DeleteArrayElementAtIndex(i);
+				}
 
 				EditorGUILayout.EndHorizontal();
 			}
@@ -68,7 +77,9 @@ namespace ToolBox.Serialization.Editor
 			GUILayout.Space(10f);
 
 			if (GUILayout.Button("Add Path", GUILayout.Height(30f)))
+			{
 				pathsProperty.InsertArrayElementAtIndex(pathsProperty.arraySize);
+			}
 		}
 
 		private void DrawButtons()
@@ -76,12 +87,16 @@ namespace ToolBox.Serialization.Editor
 			EditorGUILayout.BeginHorizontal();
 
 			if (GUILayout.Button("Load assets at paths"))
+			{
 				_provider.LoadAssets();
+			}
 
 			if (GUILayout.Button("Remove assets from container"))
 			{
 				if (EditorUtility.DisplayDialog("Clear", "Do you really want to remove all referenced assets?", "Yes", "No"))
+				{
 					_provider.Clear();
+				}
 			}
 
 			EditorGUILayout.EndHorizontal();
