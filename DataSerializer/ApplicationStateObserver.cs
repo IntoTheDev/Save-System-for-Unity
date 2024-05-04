@@ -5,11 +5,13 @@ namespace ToolBox.Serialization
 {
 	internal sealed class ApplicationStateObserver : MonoBehaviour
 	{
-		public event Action OnQuit = null;
+		public event Action OnQuit;
 
 #if !UNITY_IOS && !UNITY_ANDROID
-		private void OnApplicationQuit() =>
+		private void OnApplicationQuit()
+		{
 			OnQuit?.Invoke();
+		}
 #else
 		private void OnApplicationPause(bool pause)
 		{

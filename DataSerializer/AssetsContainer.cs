@@ -1,137 +1,116 @@
 using System.Collections.Generic;
 using System.Linq;
-using ToolBox.Serialization.OdinSerializer;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ToolBox.Serialization
 {
-	internal sealed class AssetsContainer : ScriptableObject, IExternalStringReferenceResolver
-	{
-		[SerializeField] private AssetEntry[] _savedAssets = null;
-		[SerializeField] private string[] _paths = null;
+    public sealed class AssetsContainer : ScriptableObject
+    {
+        [SerializeField] private Object[] _savedAssets;
+        [SerializeField] private string[] _paths;
 
-		public IExternalStringReferenceResolver NextResolver { get; set; }
+        public bool TryGetObject(ushort id, out Object entry)
+        {
+            entry = null;
 
-		public bool CanReference(object value, out string id)
-		{
-			id = null;
+            if (id == 0 || id >= _savedAssets.Length)
+            {
+                return false;
+            }
 
-			if (!(value is Object obj) || !TryGetValue(obj, out var entry)) 
-				return false;
-			
-			id = entry.Guid;
-			return true;
-		}
+            entry = _savedAssets[id];
+            return true;
+        }
 
-		public bool TryResolveReference(string id, out object value)
-		{
-			value = null;
+        public bool TryGetId(Object value, out ushort id)
+        {
+            id = 0;
 
-			if (id == null)
-				return false;
+            for (ushort i = 1; i < _savedAssets.Length; i++)
+            {
+                if (_savedAssets[i] != value)
+                {
+                    continue;
+                }
 
-			bool contains = TryGetValue(id, out var entry);
-			value = entry.Asset;
+                id = i;
+                return true;
+            }
 
-			return contains;
-		}
+            return false;
+        }
 
 #if UNITY_EDITOR
-		// TODO: Make everything with loops and lists instead of LINQ
-		public void LoadAssets()
-		{
-			if (_paths == null)
-				return;
+        public void LoadAssets()
+        {
+            if (_paths == null)
+            {
+                return;
+            }
 
-			_paths = _paths.Where(x => !string.IsNullOrEmpty(x) && AssetDatabase.IsValidFolder(x)).ToArray();
+            _paths = _paths.Where(x => !string.IsNullOrEmpty(x) && AssetDatabase.IsValidFolder(x)).ToArray();
 
-			if (_paths.Length == 0)
-				return;
+            if (_paths.Length == 0)
+            {
+                return;
+            }
 
-			List<Object> assets;
+            // ReSharper disable once UseArrayEmptyMethod
+            _savedAssets ??= new Object[0];
 
-			assets = AssetDatabase
-				.FindAssets("t:Object", _paths)
-				.Select(AssetDatabase.GUIDToAssetPath)
-				.Select(AssetDatabase.LoadAssetAtPath<Object>)
-				.Where(x =>
-				{
-					string fileNamespace = x.GetType().Namespace;
+            var assets = AssetDatabase
+                .FindAssets("t:Object", _paths)
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<Object>)
+                .Where(x =>
+                {
+                    var fileNamespace = x.GetType().Namespace;
 
-					return x != null && (fileNamespace == null || !fileNamespace.Contains("UnityEditor"));
-				}) // Change UnityEditor to Editor?
-				.ToList();
+                    return x != null && (fileNamespace == null || !fileNamespace.Contains("UnityEditor"));
+                })
+                .ToList();
 
-			var newEntries = new List<AssetEntry>();
+            var newEntries = new List<Object>();
 
-			foreach (var asset in assets)
-			{
-				string path = AssetDatabase.GetAssetPath(asset);
-				string guid = AssetDatabase.AssetPathToGUID(path);
+            foreach (var asset in assets)
+            {
+                if (!TryGetId(asset, out _))
+                {
+                    newEntries.Add(asset);
+                }
 
-				if (!TryGetValue(asset, out _))
-					newEntries.Add(new AssetEntry(guid, asset));
+                var children = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(asset));
 
-				var childAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(asset));
+                foreach (var child in children)
+                {
+                    if (TryGetId(child, out _))
+                    {
+                        continue;
+                    }
 
-				for (int i = 0; i < childAssets.Length; i++)
-				{
-					var child = childAssets[i];
+                    newEntries.Add(child);
+                }
+            }
 
-					if (!TryGetValue(child, out _))
-					{
-						string childGuid = System.Guid.NewGuid().ToString();
-						newEntries.Add(new AssetEntry(childGuid, child));
-					}
-				}
-			}
+            ArrayUtility.AddRange(ref _savedAssets, newEntries.ToArray());
 
-			ArrayUtility.AddRange(ref _savedAssets, newEntries.ToArray());
-			EditorUtility.SetDirty(this);
-		}
-		
-		public void Clear()
-		{
-			_savedAssets = new AssetEntry[0];
-			EditorUtility.SetDirty(this);
-		}
+            if (_savedAssets.Length == 0 || _savedAssets[0] != null)
+            {
+                ArrayUtility.Insert(ref _savedAssets, 0, null);
+            }
+
+            EditorUtility.SetDirty(this);
+        }
+
+        public void Clear()
+        {
+            _savedAssets = null;
+            EditorUtility.SetDirty(this);
+        }
 #endif
-
-		private bool TryGetValue(string guid, out AssetEntry entry)
-		{
-			for (int i = 0; i < _savedAssets.Length; i++)
-			{
-				var asset = _savedAssets[i];
-
-				if (asset.Guid == guid)
-				{
-					entry = asset;
-					return true;
-				}
-			}
-
-			entry = null;
-			return false;
-		}
-
-		private bool TryGetValue(Object obj, out AssetEntry entry)
-		{
-			for (int i = 0; i < _savedAssets.Length; i++)
-			{
-				var asset = _savedAssets[i];
-
-				if (asset.Asset == obj)
-				{
-					entry = asset;
-					return true;
-				}
-			}
-
-			entry = null;
-			return false;
-		}
-	}
+    }
 }

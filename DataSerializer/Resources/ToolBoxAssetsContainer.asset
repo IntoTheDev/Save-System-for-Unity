@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: ToolBoxAssetsContainer
   m_EditorClassIdentifier: 
   _savedAssets: []
-  _paths:
-  - 
+  _paths: []

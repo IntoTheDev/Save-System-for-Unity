@@ -30,7 +30,6 @@ namespace ToolBox.Serialization
                     && AOTSupportUtilities.ScanProjectForSerializedTypes(out var types))
                 {
                     types.Add(typeof(byte[]));
-                    types.Add(typeof(Item));
 
                     var providers = AppDomain
                         .CurrentDomain
