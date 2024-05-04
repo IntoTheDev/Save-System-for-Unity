@@ -27,7 +27,7 @@ namespace ToolBox.Serialization.OdinSerializer
 
     internal class SelfFormatterLocator : IFormatterLocator
     {
-        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, out IFormatter formatter)
+        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, bool allowWeakFallbackFormatters, out IFormatter formatter)
         {
             formatter = null;
 
@@ -36,7 +36,21 @@ namespace ToolBox.Serialization.OdinSerializer
             if ((step == FormatterLocationStep.BeforeRegisteredFormatters && type.IsDefined<AlwaysFormatsSelfAttribute>())
                 || step == FormatterLocationStep.AfterRegisteredFormatters)
             {
-                formatter = (IFormatter)Activator.CreateInstance(typeof(SelfFormatterFormatter<>).MakeGenericType(type));
+                try
+                {
+                    formatter = (IFormatter)Activator.CreateInstance(typeof(SelfFormatterFormatter<>).MakeGenericType(type));
+                }
+                catch (Exception ex)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                    {
+                        formatter = new WeakSelfFormatterFormatter(type);
+                    }
+                    else throw;
+                }
+
                 return true;
             }
 

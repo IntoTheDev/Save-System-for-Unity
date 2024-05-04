@@ -15,8 +15,10 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace ToolBox.Serialization.OdinSerializer
 {
+    using Utilities;
     using UnityEngine;
 
     /// <summary>
@@ -33,12 +35,14 @@ namespace ToolBox.Serialization.OdinSerializer
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
+            if (this.SafeIsUnityNull()) return;
             UnitySerializationUtility.DeserializeUnityObject(this, ref this.serializationData);
             this.OnAfterDeserialize();
         }
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
+            if (this.SafeIsUnityNull()) return;
             this.OnBeforeSerialize();
             UnitySerializationUtility.SerializeUnityObject(this, ref this.serializationData);
         }

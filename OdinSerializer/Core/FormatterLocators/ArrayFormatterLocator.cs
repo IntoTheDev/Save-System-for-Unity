@@ -26,7 +26,7 @@ namespace ToolBox.Serialization.OdinSerializer
 
     internal class ArrayFormatterLocator : IFormatterLocator
     {
-        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, out IFormatter formatter)
+        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, bool allowWeakFallbackFormatters, out IFormatter formatter)
         {
             if (!type.IsArray)
             {
@@ -34,20 +34,61 @@ namespace ToolBox.Serialization.OdinSerializer
                 return false;
             }
 
+            var elementType = type.GetElementType();
+
             if (type.GetArrayRank() == 1)
             {
-                if (FormatterUtilities.IsPrimitiveArrayType(type.GetElementType()))
+                if (FormatterUtilities.IsPrimitiveArrayType(elementType))
                 {
-                    formatter = (IFormatter)Activator.CreateInstance(typeof(PrimitiveArrayFormatter<>).MakeGenericType(type.GetElementType()));
+                    try
+                    {
+                        formatter = (IFormatter)Activator.CreateInstance(typeof(PrimitiveArrayFormatter<>).MakeGenericType(elementType));
+                    }
+                    catch (Exception ex)
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete
+                        if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                        {
+                            formatter = new WeakPrimitiveArrayFormatter(type, elementType);
+                        }
+                        else throw;
+                    }
                 }
                 else
                 {
-                    formatter = (IFormatter)Activator.CreateInstance(typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType()));
+                    try
+                    {
+                        formatter = (IFormatter)Activator.CreateInstance(typeof(ArrayFormatter<>).MakeGenericType(elementType));
+                    }
+                    catch (Exception ex)
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete
+                        if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                        {
+                            formatter = new WeakArrayFormatter(type, elementType);
+                        }
+                        else throw;
+                    }
                 }
             }
             else
             {
-                formatter = (IFormatter)Activator.CreateInstance(typeof(MultiDimensionalArrayFormatter<,>).MakeGenericType(type, type.GetElementType()));
+                try
+                {
+                    formatter = (IFormatter)Activator.CreateInstance(typeof(MultiDimensionalArrayFormatter<,>).MakeGenericType(type, type.GetElementType()));
+                }
+                catch (Exception ex)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                    {
+                        formatter = new WeakMultiDimensionalArrayFormatter(type, elementType);
+                    }
+                    else throw;
+                }
             }
 
             return true;

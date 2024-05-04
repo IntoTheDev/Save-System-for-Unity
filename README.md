@@ -147,15 +147,17 @@ public struct SaveData
 
 3. Press the ```Load assets at paths``` button.
 
-4. That's all!
+4. Repeat step 3 every time you create a new asset.
 
-![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
+![image](https://github.com/IntoTheDev/Save-System-for-Unity/assets/53948684/10e575a2-a4f6-4693-98c3-1e04dca618ec)
 
 ### AOT platforms
 
-You need to create a simple C# class and implement ```ITypeProvider``` interface. Then you need to add types (except primitive ones) that will be saved in your game.
+AOT (IL2CPP) works without any additional work, but IF some types do NOT serialize, please follow the steps below.
 
-Example for case above
+You need to create a simple C# class that implements the ```ITypeProvider``` interface. Then, you need to define the types (excluding primitive ones) that fail to save for some reason.
+
+Although it should work without an ITypeProvider, for the sake of simplicity, I'll use the case above as an example.
 
 ```csharp
 using System;

@@ -80,6 +80,11 @@ namespace ToolBox.Serialization.OdinSerializer
             this.Reset();
         }
 
+        public DeserializationContext(IExternalIndexReferenceResolver indexReferenceResolver) : this()
+        {
+            IndexReferenceResolver = indexReferenceResolver;
+        }
+
         /// <summary>
         /// Gets or sets the context's type binder.
         /// </summary>

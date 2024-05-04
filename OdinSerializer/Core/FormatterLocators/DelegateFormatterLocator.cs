@@ -22,11 +22,12 @@ using ToolBox.Serialization.OdinSerializer;
 
 namespace ToolBox.Serialization.OdinSerializer
 {
+    using Utilities;
     using System;
 
     internal class DelegateFormatterLocator : IFormatterLocator
     {
-        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, out IFormatter formatter)
+        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, bool allowWeakFallbackFormatters, out IFormatter formatter)
         {
             if (!typeof(Delegate).IsAssignableFrom(type))
             {
@@ -34,7 +35,21 @@ namespace ToolBox.Serialization.OdinSerializer
                 return false;
             }
 
-            formatter = (IFormatter)Activator.CreateInstance(typeof(DelegateFormatter<>).MakeGenericType(type));
+            try
+            {
+                formatter = (IFormatter)Activator.CreateInstance(typeof(DelegateFormatter<>).MakeGenericType(type));
+            }
+            catch (Exception ex)
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                {
+                    formatter = new WeakDelegateFormatter(type);
+                }
+                else throw;
+            }
+
             return true;
         }
     }

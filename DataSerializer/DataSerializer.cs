@@ -8,37 +8,29 @@ namespace ToolBox.Serialization
 {
 	public static class DataSerializer
 	{
-		private static Dictionary<string, Item> _data = null;
-		private static int _currentProfileIndex = 0;
-		private static string _savePath = string.Empty;
-		private static SerializationContext _serializationContext = null;
-		private static DeserializationContext _deserializationContext = null;
-		private static AssetsContainer _container = null;
+		private static Dictionary<string, byte[]> _data;
+		private static int _currentProfileIndex;
+		private static string _savePath;
+		private static SerializationContext _serializationContext;
+		private static DeserializationContext _deserializationContext;
+		private static ReferenceResolver _referenceResolver;
+		private const string FileName = "Save";
+		private const DataFormat DataFormat = OdinSerializer.DataFormat.Binary;
+		private const int InitialSize = 64;
 
-		private const string FILE_NAME = "Save";
-		private const DataFormat DATA_FORMAT = DataFormat.Binary;
-		private const int INITIAL_SIZE = 64;
-
-		public static event Action FileSaving = null;
+		public static AssetsContainer Container { get; private set; }
+		public static event Action FileSaving;
 
 		public static void Save<T>(string key, T dataToSave)
 		{
-			if (_data.TryGetValue(key, out var data))
-			{
-				data.Value = Serialize(dataToSave);
-			}
-			else
-			{
-				var saveItem = new Item { Value = Serialize(dataToSave) };
-				_data.Add(key, saveItem);
-			}
+			_data[key] = Serialize(dataToSave);
 		}
 
 		public static T Load<T>(string key)
 		{
 			_data.TryGetValue(key, out var value);
 
-			return Deserialize<T>(value.Value);
+			return Deserialize<T>(value);
 		}
 
 		public static bool TryLoad<T>(string key, out T data)
@@ -47,7 +39,7 @@ namespace ToolBox.Serialization
 
 			if (_data.TryGetValue(key, out var value))
 			{
-				data = Deserialize<T>(value.Value);
+				data = Deserialize<T>(value);
 				hasKey = true;
 			}
 			else
@@ -59,19 +51,27 @@ namespace ToolBox.Serialization
 			return hasKey;
 		}
 
-		public static bool HasKey(string key) =>
-			_data.ContainsKey(key);
+		public static bool HasKey(string key)
+		{
+			return _data.ContainsKey(key);
+		}
 
-		public static void DeleteKey(string key) =>
+		public static void DeleteKey(string key)
+		{
 			_data.Remove(key);
+		}
 
-		public static void DeleteAll() =>
+		public static void DeleteAll()
+		{
 			_data.Clear();
+		}
 
 		public static void ChangeProfile(int profileIndex)
 		{
 			if (_currentProfileIndex == profileIndex)
+			{
 				return;
+			}
 
 			SaveFile();
 
@@ -83,10 +83,10 @@ namespace ToolBox.Serialization
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		private static void Setup()
 		{
-			_container = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
-
-			_serializationContext = new SerializationContext { StringReferenceResolver = _container };
-			_deserializationContext = new DeserializationContext { StringReferenceResolver = _container };
+			Container = Resources.Load<AssetsContainer>("ToolBoxAssetsContainer");
+			_referenceResolver = new ReferenceResolver(Container);
+			_serializationContext = new SerializationContext(_referenceResolver);
+			_deserializationContext = new DeserializationContext(_referenceResolver);
 			
 			GeneratePath();
 			LoadFile();
@@ -114,30 +114,31 @@ namespace ToolBox.Serialization
 			if (!File.Exists(_savePath))
 			{
 				var fileStream = File.Create(_savePath);
-				fileStream?.Close();
+				fileStream.Close();
 			}
-
-			var bytes = File.ReadAllBytes(_savePath);
-			_data = Deserialize<Dictionary<string, Item>>(bytes) ?? new Dictionary<string, Item>(INITIAL_SIZE);
+			
+			_data = Deserialize<Dictionary<string, byte[]>>(File.ReadAllBytes(_savePath)) ?? new Dictionary<string, byte[]>(InitialSize);
 		}
 
-		private static void GeneratePath() =>
-			_savePath = Path.Combine(Application.persistentDataPath, $"{FILE_NAME}_{_currentProfileIndex}.data");
+		private static void GeneratePath()
+		{
+			_savePath = Path.Combine(Application.persistentDataPath, $"{FileName}_{_currentProfileIndex.ToString()}.data");
+		}
 
 		private static byte[] Serialize<T>(T data)
 		{
-			var bytes = SerializationUtility.SerializeValue(data, DATA_FORMAT, _serializationContext);
+			var bytes = SerializationUtility.SerializeValue(data, DataFormat, _serializationContext);
 			_serializationContext.ResetToDefault();
-			_serializationContext.StringReferenceResolver = _container;
+			_serializationContext.IndexReferenceResolver = _referenceResolver;
 
 			return bytes;
 		}
 
 		private static T Deserialize<T>(byte[] bytes)
 		{
-			var data = SerializationUtility.DeserializeValue<T>(bytes, DATA_FORMAT, _deserializationContext);
+			var data = SerializationUtility.DeserializeValue<T>(bytes, DataFormat, _deserializationContext);
 			_deserializationContext.Reset();
-			_deserializationContext.StringReferenceResolver = _container;
+			_deserializationContext.IndexReferenceResolver = _referenceResolver;
 
 			return data;
 		}

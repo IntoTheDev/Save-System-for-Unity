@@ -27,7 +27,7 @@ namespace ToolBox.Serialization.OdinSerializer
     /// </summary>
     /// <typeparam name="T">The type which the <see cref="ComplexTypeSerializer{T}" /> can serialize and deserialize.</typeparam>
     /// <seealso cref="Serializer{T}" />
-    public sealed class ComplexTypeSerializer<T> : Serializer<T>
+    public class ComplexTypeSerializer<T> : Serializer<T>
     {
         private static readonly bool ComplexTypeMayBeBoxedValueType = typeof(T).IsInterface || typeof(T) == typeof(object) || typeof(T) == typeof(ValueType) || typeof(T) == typeof(Enum);
         private static readonly bool ComplexTypeIsAbstract = typeof(T).IsAbstract || typeof(T).IsInterface;
@@ -596,7 +596,15 @@ namespace ToolBox.Serialization.OdinSerializer
                 }
                 else if (context.TryRegisterInternalReference(value, out id))
                 {
-                    Type type = value.GetType(); // Get type of actual stored object
+                    // Get type of actual stored object
+                    //
+                    // Don't have it as a strongly typed T value, since people can "override" (shadow)
+                    // GetType() on derived classes with the "new" operator. By referencing the type
+                    // as a System.Object, we ensure the correct GetType() method is always called.
+                    //
+                    // (Yes, this has actually happened, and this was done to fix it.)
+
+                    Type type = (value as object).GetType();
 
                     if (ComplexTypeMayBeBoxedValueType && FormatterUtilities.IsPrimitiveType(type)) 
                     // It's a boxed primitive type

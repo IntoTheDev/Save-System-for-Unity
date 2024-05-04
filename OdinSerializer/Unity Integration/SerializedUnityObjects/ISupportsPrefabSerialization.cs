@@ -15,6 +15,7 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace ToolBox.Serialization.OdinSerializer
 {
     /// <summary>
