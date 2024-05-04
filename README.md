@@ -3,7 +3,7 @@
 ### TODO
 - [x] Assets References
 - [x] AOT support
-- [ ] Test with Desktop and Mobile builds. Mono and IL2CPP. (Finally managed to get my hands on this branch again. Testing a few things for now. I'll release this branch in 2023 Q1)
+- [x] Test with Desktop and Mobile builds. Mono and IL2CPP. (Finally managed to get my hands on this branch again. Testing a few things for now. I'll release this branch in 2023 Q1)
 
 
 ## Features
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
 
 3. Press the ```Load assets at paths``` button.
 
-![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
+![image](https://github.com/IntoTheDev/Save-System-for-Unity/assets/53948684/10e575a2-a4f6-4693-98c3-1e04dca618ec)
 
 4. Specify formatter for a field or a class itself like in the API example
 
