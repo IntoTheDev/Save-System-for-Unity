@@ -155,7 +155,7 @@ public struct SaveData
 
 AOT (IL2CPP) works without any additional work, but IF some types do NOT serialize, please follow the steps below.
 
-You need to create a simple C# class that implements the ```ITypeProvider``` interface. Then, you need to define the types (excluding primitive ones) that fail to save for some reason.
+You need to create a simple C# class that implements the ```ITypeProvider``` interface. Then, you need to define the types that fail to save for some reason.
 
 Although it should work without an ITypeProvider, for the sake of simplicity, I'll use the case above as an example.
 
