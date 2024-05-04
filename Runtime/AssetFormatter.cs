@@ -8,14 +8,14 @@ namespace ToolBox.Serialization
     {
         public void Serialize(ref MessagePackWriter writer, T value, MessagePackSerializerOptions options)
         {
-            DataSerializer.Container.TryResolveId(value, out var id);
+            DataSerializer.Container.TryGetId(value, out var id);
 			
-            writer.Write(id);
+            writer.WriteUInt16(id);
         }
 
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
-            DataSerializer.Container.TryResolveReference(reader.ReadString(), out var value);
+            DataSerializer.Container.TryGetObject(reader.ReadUInt16(), out var value);
 			
             return (T)value;
         }
