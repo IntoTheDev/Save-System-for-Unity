@@ -203,7 +203,24 @@ namespace ToolBox.Serialization.OdinSerializer
         /// <param name="writer">The writer to use.</param>
         public static void SerializeValue<T>(T value, IDataWriter writer)
         {
-            Serializer.Get<T>().WriteValue(value, writer);
+            if (EmitUtilities.CanEmit)
+            {
+                Serializer.Get<T>().WriteValue(value, writer);
+            }
+            else
+            {
+                var serializer = Serializer.Get(typeof(T));
+                var strong = serializer as Serializer<T>;
+
+                if (strong != null)
+                {
+                    strong.WriteValue(value, writer);
+                }
+                else
+                {
+                    serializer.WriteValueWeak(value, writer);
+                }
+            }
             writer.FlushToStream();
         }
 
@@ -219,7 +236,24 @@ namespace ToolBox.Serialization.OdinSerializer
             using (var unityResolver = Cache<UnityReferenceResolver>.Claim())
             {
                 writer.Context.IndexReferenceResolver = unityResolver.Value;
-                Serializer.Get<T>().WriteValue(value, writer);
+                if (EmitUtilities.CanEmit)
+                {
+                    Serializer.Get<T>().WriteValue(value, writer);
+                }
+                else
+                {
+                    var serializer = Serializer.Get(typeof(T));
+                    var strong = serializer as Serializer<T>;
+
+                    if (strong != null)
+                    {
+                        strong.WriteValue(value, writer);
+                    }
+                    else
+                    {
+                        serializer.WriteValueWeak(value, writer);
+                    }
+                }
                 writer.FlushToStream();
                 unityObjects = unityResolver.Value.GetReferencedUnityObjects();
             }
@@ -437,7 +471,7 @@ namespace ToolBox.Serialization.OdinSerializer
         /// <returns>The deserialized value.</returns>
         public static object DeserializeValueWeak(IDataReader reader)
         {
-            return Serializer.Get<object>().ReadValueWeak(reader);
+            return Serializer.Get(typeof(object)).ReadValueWeak(reader);
         }
 
         /// <summary>
@@ -454,7 +488,7 @@ namespace ToolBox.Serialization.OdinSerializer
             {
                 unityResolver.Value.SetReferencedUnityObjects(referencedUnityObjects);
                 reader.Context.IndexReferenceResolver = unityResolver.Value;
-                return Serializer.Get<object>().ReadValueWeak(reader);
+                return Serializer.Get(typeof(object)).ReadValueWeak(reader);
             }
         }
 
@@ -466,7 +500,24 @@ namespace ToolBox.Serialization.OdinSerializer
         /// <returns>The deserialized value.</returns>
         public static T DeserializeValue<T>(IDataReader reader)
         {
-            return Serializer.Get<T>().ReadValue(reader);
+            if (EmitUtilities.CanEmit)
+            {
+                return Serializer.Get<T>().ReadValue(reader);
+            }
+            else
+            {
+                var serializer = Serializer.Get(typeof(T));
+                var strong = serializer as Serializer<T>;
+
+                if (strong != null)
+                {
+                    return strong.ReadValue(reader);
+                }
+                else
+                {
+                    return (T)serializer.ReadValueWeak(reader);
+                }
+            }
         }
 
         /// <summary>
@@ -484,7 +535,25 @@ namespace ToolBox.Serialization.OdinSerializer
             {
                 unityResolver.Value.SetReferencedUnityObjects(referencedUnityObjects);
                 reader.Context.IndexReferenceResolver = unityResolver.Value;
-                return Serializer.Get<T>().ReadValue(reader);
+
+                if (EmitUtilities.CanEmit)
+                {
+                    return Serializer.Get<T>().ReadValue(reader);
+                }
+                else
+                {
+                    var serializer = Serializer.Get(typeof(T));
+                    var strong = serializer as Serializer<T>;
+
+                    if (strong != null)
+                    {
+                        return strong.ReadValue(reader);
+                    }
+                    else
+                    {
+                        return (T)serializer.ReadValueWeak(reader);
+                    }
+                }
             }
         }
 
@@ -705,6 +774,8 @@ namespace ToolBox.Serialization.OdinSerializer
 
         /// <summary>
         /// Creates a deep copy of an object. Returns null if null. All Unity objects references will remain the same - they will not get copied.
+        /// Similarly, strings are not copied, nor are reflection types such as System.Type, or types derived from System.Reflection.MemberInfo,
+        /// System.Reflection.Assembly or System.Reflection.Module.
         /// </summary>
         public static object CreateCopy(object obj)
         {
@@ -725,7 +796,10 @@ namespace ToolBox.Serialization.OdinSerializer
                 return obj;
             }
 
-            if (type.InheritsFrom(typeof(UnityEngine.Object)))
+            if (type.InheritsFrom(typeof(UnityEngine.Object))
+                || type.InheritsFrom(typeof(System.Reflection.MemberInfo))
+                || type.InheritsFrom(typeof(System.Reflection.Assembly))
+                || type.InheritsFrom(typeof(System.Reflection.Module)))
             {
                 return obj;
             }

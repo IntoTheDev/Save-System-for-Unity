@@ -15,6 +15,7 @@
 // limitations under the License.
 // </copyright>
 //-----------------------------------------------------------------------
+
 namespace ToolBox.Serialization.OdinSerializer.Utilities
 {
     using System;
@@ -191,7 +192,7 @@ namespace ToolBox.Serialization.OdinSerializer.Utilities
             string message = string.Format(
                 CultureInfo.InvariantCulture,
                 "Unable to determine IsStatic for member {0}.{1}" +
-                "MemberType was {2} but only fields, properties and methods are supported.",
+                "MemberType was {2} but only fields, properties, methods, events and types are supported.",
                 member.DeclaringType.FullName,
                 member.Name,
                 member.GetType().FullName);

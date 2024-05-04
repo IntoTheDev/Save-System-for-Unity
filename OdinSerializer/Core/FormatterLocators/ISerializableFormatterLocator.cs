@@ -24,12 +24,11 @@ namespace ToolBox.Serialization.OdinSerializer
 {
     using Utilities;
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     internal class ISerializableFormatterLocator : IFormatterLocator
     {
-        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, out IFormatter formatter)
+        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, bool allowWeakFallbackFormatters, out IFormatter formatter)
         {
             if (step != FormatterLocationStep.AfterRegisteredFormatters || !typeof(ISerializable).IsAssignableFrom(type))
             {
@@ -37,7 +36,21 @@ namespace ToolBox.Serialization.OdinSerializer
                 return false;
             }
 
-            formatter = (IFormatter)Activator.CreateInstance(typeof(SerializableFormatter<>).MakeGenericType(type));
+            try
+            {
+                formatter = (IFormatter)Activator.CreateInstance(typeof(SerializableFormatter<>).MakeGenericType(type));
+            }
+            catch (Exception ex)
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                {
+                    formatter = new WeakSerializableFormatter(type);
+                }
+                else throw;
+            }
+
             return true;
         }
     }

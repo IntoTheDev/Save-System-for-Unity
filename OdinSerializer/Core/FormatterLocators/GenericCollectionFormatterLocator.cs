@@ -22,11 +22,12 @@ using ToolBox.Serialization.OdinSerializer;
 
 namespace ToolBox.Serialization.OdinSerializer
 {
+    using Utilities;
     using System;
 
     internal class GenericCollectionFormatterLocator : IFormatterLocator
     {
-        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, out IFormatter formatter)
+        public bool TryGetFormatter(Type type, FormatterLocationStep step, ISerializationPolicy policy, bool allowWeakFallbackFormatters, out IFormatter formatter)
         {
             Type elementType;
             if (step != FormatterLocationStep.AfterRegisteredFormatters || !GenericCollectionFormatter.CanFormat(type, out elementType))
@@ -35,7 +36,21 @@ namespace ToolBox.Serialization.OdinSerializer
                 return false;
             }
 
-            formatter = (IFormatter)Activator.CreateInstance(typeof(GenericCollectionFormatter<,>).MakeGenericType(type, elementType));
+            try
+            {
+                formatter = (IFormatter)Activator.CreateInstance(typeof(GenericCollectionFormatter<,>).MakeGenericType(type, elementType));
+            }
+            catch (Exception ex)
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                if (allowWeakFallbackFormatters && (ex is ExecutionEngineException || ex.GetBaseException() is ExecutionEngineException))
+#pragma warning restore CS0618 // Type or member is obsolete
+                {
+                    formatter = new WeakGenericCollectionFormatter(type, elementType);
+                }
+                else throw;
+            }
+
             return true;
         }
     }

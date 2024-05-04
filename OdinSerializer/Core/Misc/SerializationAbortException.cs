@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// <copyright file="SerializationOptions.cs" company="Sirenix IVS">
+// <copyright file="SerializationAbortException.cs" company="Sirenix IVS">
 // Copyright (c) 2018 Sirenix IVS
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
-
 namespace ToolBox.Serialization.OdinSerializer
 {
+    using System;
+
     /// <summary>
     /// An exception thrown when the serialization system has encountered an issue so severe that serialization is being aborted. If this exception is caught in the serialization system somewhere, it should be rethrown.
     /// </summary>
