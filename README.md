@@ -149,7 +149,7 @@ public struct SaveData
 
 4. Repeat step 3 every time you create a new asset.
 
-![image](https://user-images.githubusercontent.com/53948684/117006947-776b6980-ad02-11eb-997c-e9108e5c3f97.png)
+![image](https://github.com/IntoTheDev/Save-System-for-Unity/assets/53948684/10e575a2-a4f6-4693-98c3-1e04dca618ec)
 
 ### AOT platforms
 
