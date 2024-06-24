@@ -15,7 +15,7 @@ namespace ToolBox.Serialization
 
         public T Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
-            var resolved = DataSerializer.Container.TryResolveReference(reader.ReadUInt16(), out var value);
+            var resolved = DataSerializer.Container.TryGetObject(reader.ReadUInt16(), out var value);
 
             return resolved ? (T)value : null;
         }
