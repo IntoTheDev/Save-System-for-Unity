@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
 
 ### AOT platforms
 
-You don’t need to do anything for it to work with AOT/IL2CPP, but if any issues come up, check this out: [AOT code generation support for Unity/Xamarin](https://github.com/neuecc/MessagePack-CSharp#aot-code-generation-support-for-unityxamarin)
+You don’t need to do anything for it to work with AOT/IL2CPP, but if any issues come up, check this out: [AOT code generation support for Unity/Xamarin](https://github.com/MessagePack-CSharp/MessagePack-CSharp?tab=readme-ov-file#aot)
 
 ## Performance test
 
