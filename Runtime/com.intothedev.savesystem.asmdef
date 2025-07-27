@@ -2,8 +2,7 @@
     "name": "com.intothedev.savesystem",
     "rootNamespace": "",
     "references": [
-        "MessagePack",
-        "MessagePack.Annotations"
+        "MessagePack.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
