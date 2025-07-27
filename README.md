@@ -1,17 +1,11 @@
 # Save System for Unity
 
-### TODO
-- [x] Assets References
-- [x] AOT support
-- [x] Test with Desktop and Mobile builds. Mono and IL2CPP. (Finally managed to get my hands on this branch again. Testing a few things for now. I'll release this branch in 2023 Q1)
-
-
 ## Features
 - Can save pretty much everything (Vector, Quaternion, Array, List, Class, Struct, etc)
 - Can save assets references
 - Easy to use
 - Fast in terms of performance. Even simple int saving way more faster than ```PlayerPrefs.SetInt()```. Performance test at the end of README
-- Save files are encrypted
+- Automatic save file backup 
 - Extensible
 
 ## How to Install
@@ -92,37 +86,7 @@ public class Player : MonoBehaviour
 
 ### AOT platforms
 
-[See](https://github.com/neuecc/MessagePack-CSharp#aot-code-generation-support-for-unityxamarin)
-
-```csharp
-using MessagePack;
-using MessagePack.Resolvers;
-using MessagePack.Unity;
-using MessagePack.Unity.Extension;
-using Serializer;
-using ToolBox.Serialization;
-using UnityEngine;
-
-public static class MessagePackStartup
-{
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Setup()
-    {
-        StaticCompositeResolver.Instance.Register(
-            GeneratedResolver.Instance,
-            UnityBlitResolver.Instance,
-            UnityResolver.Instance,
-            StandardResolver.Instance,
-            DataSerializerResolver.Instance
-        );
-
-        var options = ContractlessStandardResolverAllowPrivate.Options.WithResolver(StaticCompositeResolver.Instance);
-        
-        DataSerializer.Options = options;
-        MessagePackSerializer.DefaultOptions = options;
-    }
-}
-```
+You don’t need to do anything for it to work with AOT/IL2CPP, but if any issues come up, check this out: [AOT code generation support for Unity/Xamarin](https://github.com/neuecc/MessagePack-CSharp#aot-code-generation-support-for-unityxamarin)
 
 ## Performance test
 
