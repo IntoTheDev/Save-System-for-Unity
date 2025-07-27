@@ -1,8 +1,8 @@
 {
   "name": "com.intothedev.savesystem",
-  "version": "2.0.0",
+  "version": "1.1.0",
   "displayName": "Save System",
-  "description": "Save System with Odin Serializer.",
+  "description": "Save System with MessagePack.",
   "author": {
     "name": "IntoTheDev",
     "email": "indraayy322@gmail.com",

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace ToolBox.Serialization
         private static Dictionary<string, byte[]> _data = new();
         private static readonly string _persistentDataPath = Application.persistentDataPath;
 
-        internal static AssetsContainer Container { get; private set; }
+        public static AssetsContainer Container { get; private set; }
 
         public static MessagePackSerializerOptions Options { get; set; } = ContractlessStandardResolverAllowPrivate.Options;
 
@@ -52,6 +53,16 @@ namespace ToolBox.Serialization
             return hasKey;
         }
 
+        public static T LoadOrDefault<T>(string key, T defaultValue)
+        {
+            if (_data.TryGetValue(key, out var bytes))
+            {
+                return Deserialize<T>(bytes);
+            }
+
+            return defaultValue;
+        }
+
         public static bool HasKey(string key)
         {
             return _data.ContainsKey(key);
@@ -69,52 +80,90 @@ namespace ToolBox.Serialization
 
         public static void SaveFile(string fileName)
         {
+            if (_data == null || _data.Count == 0)
+            {
+                return;
+            }
+
             var path = GetPath(fileName);
-            var bytes = Serialize(_data);
+            var tempPath = path + ".tmp";
 
-            File.WriteAllBytes(path, bytes);
+            try
+            {
+                var fileExists = File.Exists(path);
 
-#if UNITY_WEBGL
-            Application.ExternalEval("_JS_FileSystem_Sync();");
-#endif
-        }
+                File.WriteAllBytes(tempPath, Serialize(_data));
 
-        public static async Task SaveFileAsync(string fileName, CancellationToken token = default)
-        {
-            var path = GetPath(fileName);
-            var bytes = Serialize(_data);
+                if (TryLoadFile(tempPath, out var tempData))
+                {
+                    if (fileExists)
+                    {
+                        File.Delete(path);
+                    }
 
-            await File.WriteAllBytesAsync(path, bytes, token);
+                    File.Move(tempPath, path);
+                }
+                else
+                {
+                    throw new Exception("Temporary save file validation failed. Aborting save.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
 
-#if UNITY_WEBGL
-            Application.ExternalEval("_JS_FileSystem_Sync();");
-#endif
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+            }
         }
 
         public static void LoadFile(string fileName)
         {
             var path = GetPath(fileName);
-            var bytes = File.ReadAllBytes(path);
 
-            if (bytes.Length == 0)
+            if (TryLoadFile(path, out var data))
             {
+                _data = data;
+                File.Copy(path, path + ".bak", true);
                 return;
             }
 
-            _data = Deserialize<Dictionary<string, byte[]>>(bytes);
+            Debug.LogWarning("Primary save file is invalid or does not exist. Attempting to load from backup.");
+
+            if (TryLoadFile(path + ".bak", out var backupData))
+            {
+                _data = backupData;
+                return;
+            }
+
+            Debug.LogWarning("No valid backup save file found. Initializing to an empty state.");
+            _data = new Dictionary<string, byte[]>();
         }
 
-        public static async Task LoadFileAsync(string fileName, CancellationToken token = default)
+        private static bool TryLoadFile(string filePath, out Dictionary<string, byte[]> data)
         {
-            var path = GetPath(fileName);
-            var bytes = await File.ReadAllBytesAsync(path, token);
-
-            if (bytes.Length == 0)
+            try
             {
-                return;
+                if (File.Exists(filePath))
+                {
+                    var bytes = File.ReadAllBytes(filePath);
+
+                    if (bytes.Length > 0)
+                    {
+                        data = Deserialize<Dictionary<string, byte[]>>(bytes);
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
             }
 
-            _data = Deserialize<Dictionary<string, byte[]>>(bytes);
+            data = null;
+            return false;
         }
 
         public static byte[] Serialize<T>(T data)
